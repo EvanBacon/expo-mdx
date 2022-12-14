@@ -16,7 +16,6 @@ export async function transform(props: { filename: string; src: string }) {
     // Append this final rule at the end of the compiler chain:
     compiler.use(() => {
       return (tree, _file) => {
-        // @ts-expect-error
         visit(tree, "element", (node) => {
           // Ensure we don't use react-dom elements
           node.tagName = "html." + node.tagName;
