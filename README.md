@@ -1,6 +1,6 @@
 # @bacons/mdx
 
-MDX support for React Native projects.
+[MDX](https://mdxjs.com) support for React Native projects.
 
 ## Add the package to your npm dependencies
 
