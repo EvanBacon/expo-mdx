@@ -1,46 +1,26 @@
 {
-  "name": "@bacons/mdx",
-  "version": "0.0.1",
-  "description": "Universal MDX renderer for React Native",
-  "main": "build/index.js",
-  "files": [
-    "build",
-    "metro-transformer.js",
-    "metro-transformer.d.ts"
-  ],
+  "name": "@bacons/mdx-repo",
+  "version": "1.0.0",
+  "private": true,
   "scripts": {
-    "build": "expo-module build",
-    "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "test": "expo-module test",
-    "prepare": "expo-module prepare",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "postinstall": "expo-yarn-workspaces check-workspace-dependencies",
+    "start": "lerna run build --parallel -- --watch",
+    "prepare": "lerna run prepare --parallel"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/evanbacon/expo-mdx.git"
-  },
-  "peerDependencies": {
-    "react-native": "*"
-  },
-  "keywords": [
-    "react-native",
-    "react-native-web",
-    "expo",
-    "mdx",
-    "typescript"
+  "workspaces": [
+    "apps/*",
+    "packages/*"
   ],
-  "author": "Evan Bacon",
-  "license": "MIT",
-  "devDependencies": {
-    "expo-module-scripts": "^2.0.0",
-    "react-native": "0.68.2"
+  "resolutions": {
+    "expo": "^47.0.3",
+    "fs-extra": "^9.1.0"
   },
-  "dependencies": {
-    "@bacons/react-views": "^1.1.3",
-    "@expo/html-elements": "^0.2.2",
-    "@mdx-js/mdx": "^1.6.22",
-    "unist-util-visit": "^1.4.1"
+  "devDependencies": {
+    "eslint": "^8.10.0",
+    "expo-yarn-workspaces": "^2.0.2",
+    "lerna": "3.4.1",
+    "prettier": "^2.2.1",
+    "ts-node": "^10.0.0",
+    "typescript": "^4.2.4"
   }
 }
