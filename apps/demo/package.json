@@ -1,0 +1,26 @@
+{
+  "name": "@bacons/mdx-demo-app",
+  "main": "./index.js",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "expo start",
+    "ios": "expo run:ios",
+    "android": "expo run:android"
+  },
+  "dependencies": {
+    "@bacons/expo-metro-runtime": "^2.0.1",
+    "@bacons/mdx": "*",
+    "@types/react-native": "~0.70.6",
+    "expo": "~47.0.3",
+    "expo-splash-screen": "~0.17.4",
+    "expo-status-bar": "~1.4.2",
+    "react": "18.1.0",
+    "react-dom": "18.1.0",
+    "react-native": "0.70.5",
+    "react-native-web": "~0.18.9"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.9"
+  },
+  "private": true
+}

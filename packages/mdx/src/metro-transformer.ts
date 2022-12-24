@@ -18,6 +18,7 @@ export async function transform(props: { filename: string; src: string }) {
       return (tree, _file) => {
         visit(tree, "element", (node) => {
           // Ensure we don't use react-dom elements
+          // @ts-expect-error: incorrect types
           node.tagName = "html." + node.tagName;
         });
       };
@@ -30,7 +31,7 @@ export async function transform(props: { filename: string; src: string }) {
     props.src = getTemplate(contents);
 
     // console.log("\n-----\n");
-    // console.log("Compiled MDX file:", filename, "\n", src);
+    // console.log("Compiled MDX file:", props.filename, "\n", props.src);
     // console.log("\n-----\n");
   }
   return props;
