@@ -1,6 +1,9 @@
 {
   "expo": {
     "name": "demo",
-    "icon": "https://icogen.vercel.app/api/icon?icon=✍️&color_hex=4294F2"
+    "icon": "https://icogen.vercel.app/api/icon?icon=✍️&color_hex=4294F2",
+    "web": {
+      "bundler": "metro"
+    }
   }
 }

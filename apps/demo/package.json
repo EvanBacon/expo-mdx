@@ -8,7 +8,9 @@
     "android": "expo run:android"
   },
   "dependencies": {
+    "@bacons/expo-metro-runtime": "^2.0.1",
     "@bacons/mdx": "*",
+    "@types/react-native": "~0.70.6",
     "expo": "~47.0.3",
     "expo-splash-screen": "~0.17.4",
     "expo-status-bar": "~1.4.2",
