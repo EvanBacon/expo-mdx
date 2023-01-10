@@ -105,7 +105,7 @@ import { Text } from "react-native";
 import { MDXComponents } from "@bacons/mdx";
 
 export default function App() {
-  // Pass any HTML element as a key to the MDXStyles component.
+  // Pass any HTML element as a key to the MDXComponents component.
   return (
     <MDXComponents h1={(props) => <Text {...props} />}>
       <Demo />
