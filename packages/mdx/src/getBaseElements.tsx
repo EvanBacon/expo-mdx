@@ -1,14 +1,16 @@
-import { Text, View } from "@bacons/react-views";
+import { Image, Text, View } from "@bacons/react-views";
 import * as htmlElements from "@expo/html-elements";
-import React from "react";
-import { StyleSheet, Platform } from "react-native";
-import { Children } from "react";
+import React, { Children } from "react";
+import { Platform } from "react-native";
+
 import { AutoImage } from "./AutoImage";
+import * as List from "./list/List";
+import { Caption, Table, TBody, TD, TFoot, TH, THead, TR } from "./table/Table";
 
 export function getBaseElements() {
   return {
     Wrapper: ({ children }) => {
-      let prevChildTypes = ["root"];
+      const prevChildTypes = ["root"];
       const childrenCount = Children.count(children);
       return Children.map(children, (child, index) => {
         if (typeof child === "string") {
@@ -27,7 +29,7 @@ export function getBaseElements() {
             firstChild: index === 0,
             lastChild: index === childrenCount - 1,
             firstOfType: isFirstOfType,
-            prevSibling: prevSibling,
+            prevSibling,
           },
           child.props.children
         );
@@ -42,11 +44,11 @@ export function getBaseElements() {
     h6: htmlElements.H6,
     a: htmlElements.A,
 
-    ul: htmlElements.UL,
+    ul: List.UL,
     // TODO
-    li: htmlElements.LI,
+    li: List.LI,
     // TODO
-    ol: htmlElements.UL,
+    ol: List.UL,
 
     nav: htmlElements.Nav,
     footer: htmlElements.Footer,
@@ -76,14 +78,15 @@ export function getBaseElements() {
 
     hr: htmlElements.HR,
 
-    table: htmlElements.Table,
-    thead: htmlElements.THead,
-    tbody: htmlElements.TBody,
-    tfoot: htmlElements.TFoot,
-    th: htmlElements.TH,
-    tr: htmlElements.TR,
-    td: htmlElements.TD,
-    caption: htmlElements.Caption,
+    table: Table,
+    thead: THead,
+    tbody: TBody,
+    tfoot: TFoot,
+    th: TH,
+    tr: TR,
+    td: TD,
+    caption: Caption,
+
     div: Div,
     span: Text,
 
@@ -96,13 +99,12 @@ function Div(props) {
 }
 
 function Img({ src, style }) {
+  const source = typeof src === "string" ? { uri: src } : src;
   if (Platform.OS === "web") {
-    return (
-      <img src={src} style={StyleSheet.flatten([{ width: "100%" }, style])} />
-    );
+    return <Image source={source} style={style} />;
   }
 
-  return <AutoImage style={style} source={{ uri: src }} />;
+  return <AutoImage style={style} source={source} />;
 }
 
 function wrapHeader(Element) {

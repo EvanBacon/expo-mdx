@@ -16,6 +16,21 @@ export async function transform(props: { filename: string; src: string }) {
     // Append this final rule at the end of the compiler chain:
     compiler.use(() => {
       return (tree, _file) => {
+        function walkForImages(node) {
+          if (node.tagName === "img") {
+            if (node.properties.src.startsWith(".")) {
+              // Relative path should be turned into a require statement:
+              node.properties.src = `[[_Expo_MemberProperty:require("${node.properties.src}")]]`;
+              // delete node.properties.src;
+            }
+          }
+          if (node.children) {
+            node.children.forEach(walkForImages);
+          }
+        }
+
+        tree.children.map(walkForImages);
+
         visit(tree, "element", (node) => {
           // Ensure we don't use react-dom elements
           // @ts-expect-error: incorrect types
@@ -23,10 +38,18 @@ export async function transform(props: { filename: string; src: string }) {
         });
       };
     });
-    const { contents } = await compiler.process({
+    let { contents } = await compiler.process({
       contents: props.src,
       path: props.filename,
     });
+
+    // Support member expressions in require statements:
+    contents = contents.replace(
+      /\"\[\[_Expo_MemberProperty:(.*)\]\]\"/g,
+      (match, p1) => {
+        return p1.replace(/\\\\/g, "\\").replace(/\\"/g, '"');
+      }
+    );
 
     props.src = getTemplate(contents);
 
