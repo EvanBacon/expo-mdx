@@ -90,7 +90,7 @@ function Div(props) {
 
 function Img({ src, style }) {
   const source = typeof src === "string" ? { uri: src } : src;
-  if (Platform.OS === "web") {
+  if (Platform.OS === "web" || !source.uri) {
     return <Image source={source} style={style} />;
   }
 

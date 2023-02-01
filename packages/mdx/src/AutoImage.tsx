@@ -10,6 +10,7 @@ export function AutoImage(props: ImageProps) {
   const [imageHeight, setImageHeight] = React.useState(100);
 
   React.useEffect(() => {
+    // @ts-expect-error
     UpstreamImage.getSize(props.source.uri, (w, h) => {
       setImageSize({ width: w, height: h });
     });
