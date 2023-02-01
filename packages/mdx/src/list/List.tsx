@@ -23,5 +23,6 @@ export const LI = forwardRef((props: PropsWithChildren<LIProps>, ref: any) => {
     web: "listitem",
     default: props.accessibilityRole,
   });
+  // @ts-expect-error
   return <Text {...props} accessibilityRole={accessibilityRole} ref={ref} />;
 }) as ComponentType<LIProps>;

@@ -5,7 +5,6 @@ import { Platform } from "react-native";
 
 import { AutoImage } from "./AutoImage";
 import * as List from "./list/List";
-import { Caption, Table, TBody, TD, TFoot, TH, THead, TR } from "./table/Table";
 
 export function getBaseElements() {
   return {
@@ -77,15 +76,6 @@ export function getBaseElements() {
     em: htmlElements.EM,
 
     hr: htmlElements.HR,
-
-    table: Table,
-    thead: THead,
-    tbody: TBody,
-    tfoot: TFoot,
-    th: TH,
-    tr: TR,
-    td: TD,
-    caption: Caption,
 
     div: Div,
     span: Text,
