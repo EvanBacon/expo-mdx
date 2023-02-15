@@ -1,4 +1,8 @@
 {
-  "compilerOptions": {},
+  "compilerOptions": {
+    "typeRoots": [
+      "./global.d.ts"
+    ]
+  },
   "extends": "expo/tsconfig.base"
 }

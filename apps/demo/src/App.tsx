@@ -1,5 +1,5 @@
 import Demo from "./demo.mdx";
-import { ScrollView, ActivityIndicator, SafeAreaView } from "react-native";
+import { ScrollView, SafeAreaView } from "react-native";
 import { MDXStyles, MDXComponents } from "@bacons/mdx";
 import { View } from "@bacons/react-views";
 export default function App() {

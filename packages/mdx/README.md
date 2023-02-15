@@ -116,6 +116,32 @@ export default function App() {
 
 > Just be sure to pass the `style` prop down to the component you're using, this is how the styles are cascaded.
 
+## Typescript
+
+You can add support for importing `.mdx` files in your `tsconfig.json` file.
+
+`tsconfig.json`
+
+```json
+{
+  "compilerOptions": {
+    "typeRoots": ["./global.d.ts"]
+  },
+  "extends": "expo/tsconfig.base"
+}
+```
+
+Now create a file that declares the module.
+
+`./global.d.ts`
+
+```ts
+declare module "*.mdx" {
+  function Component(props: any): JSX.Element;
+  export default Component;
+}
+```
+
 ## Known Issues
 
 - ol, li, ul are all buggy. PRs welcome.
