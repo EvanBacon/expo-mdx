@@ -142,6 +142,16 @@ declare module "*.mdx" {
 }
 ```
 
+## Next.js Ussage
+
+1. Follow steps detailed here: [https://nextjs.org/docs/advanced-features/using-mdx](https://nextjs.org/docs/advanced-features/using-mdx)
+2. Add the following packages to `transpile-modules` within your `next.config.js`:
+   ```js
+   '@bacons/mdx',
+   '@bacons/react-views',
+   '@expo/html-elements',
+   ```
+
 ## Known Issues
 
 - ol, li, ul are all buggy. PRs welcome.
