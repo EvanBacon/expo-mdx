@@ -1,5 +1,6 @@
-import Demo from "./demo.mdx";
-import { ScrollView, SafeAreaView } from "react-native";
+import Demo from "./tester.mdx";
+
+import { ScrollView, Text, SafeAreaView } from "react-native";
 import { MDXStyles, MDXComponents } from "@bacons/mdx";
 import { View } from "@bacons/react-views";
 export default function App() {
@@ -93,6 +94,9 @@ function MediumStyle({ children }) {
       }}
     >
       <MDXComponents
+        components={{
+          Bacon: (props) => <Text {...props} style={{ color: "blue" }} />,
+        }}
         hr={({ style }) => (
           <View style={style}>
             {["", "", ""].map((v, i) => (

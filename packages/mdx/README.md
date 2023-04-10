@@ -107,7 +107,14 @@ import { MDXComponents } from "@bacons/mdx";
 export default function App() {
   // Pass any HTML element as a key to the MDXComponents component.
   return (
-    <MDXComponents h1={(props) => <Text {...props} />}>
+    <MDXComponents
+      components={{
+        h1: (props) => <Text {...props} />,
+        // Add custom components which can be used as JSX elements.
+        RedText: (props) => <Text {...props} style={{ color: "red" }} />,
+        // This can be used as `<RedText />` without the need to import it.
+      }}
+    >
       <Demo />
     </MDXComponents>
   );

@@ -19,17 +19,22 @@ export function useMDXComponents() {
 
 export function MDXComponents({
   children,
+  components,
   ...props
-}: { children?: any } & Partial<Elements>) {
+}: {
+  children?: any;
+  components?: Record<string, React.ReactNode>;
+} & Partial<Elements>) {
+  const allProps = { ...props, ...components };
   const parent = useMDXComponents();
   const value = React.useMemo(
     () => ({
-      ...Object.keys({ ...props, ...parent }).reduce((acc, key) => {
-        acc[key] = props[key] ?? parent[key];
+      ...Object.keys({ ...allProps, ...parent }).reduce((acc, key) => {
+        acc[key] = allProps[key] ?? parent[key];
         return acc;
       }, {} as Elements),
     }),
-    [parent, props]
+    [parent, allProps]
   );
   return (
     <MDXComponentsContext.Provider value={value}>
