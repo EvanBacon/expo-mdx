@@ -1,6 +1,6 @@
+import { Image, ImageProps } from "@bacons/react-views";
 import React from "react";
 import { Image as UpstreamImage } from "react-native";
-import { Image, ImageProps } from "@bacons/react-views";
 
 export function AutoImage(props: ImageProps) {
   const [imgSize, setImageSize] = React.useState<{

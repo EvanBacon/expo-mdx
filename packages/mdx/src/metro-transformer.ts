@@ -62,7 +62,7 @@ export async function transform(props: { filename: string; src: string }) {
 
     // Support member expressions in require statements:
     contents = contents.replace(
-      /\"\[\[_Expo_MemberProperty:(.*)\]\]\"/g,
+      /"\[\[_Expo_MemberProperty:(.*)\]\]"/g,
       (match, p1) => {
         return p1.replace(/\\\\/g, "\\").replace(/\\"/g, '"');
       }
