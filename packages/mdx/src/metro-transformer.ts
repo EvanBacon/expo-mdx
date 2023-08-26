@@ -1,6 +1,8 @@
 import mdx from "@mdx-js/mdx";
 import visit from "unist-util-visit";
 
+const debug = require("debug")("bacons:mdx:transform") as typeof console.log;
+
 const getTemplate = (rawMdxString) => {
   const replacedShortcodes = rawMdxString.replace(
     /= makeShortcode\(/g,
@@ -27,9 +29,18 @@ const makeExpoMetroProvided = name => function MDXExpoMetroComponent(props) {
 };
 `;
 
-export async function transform(props: { filename: string; src: string }) {
-  if (props.filename.match(/\.mdx?$/)) {
-    const compiler = mdx.createCompiler({});
+export function createTransformer({
+  match = (props) => !!props.filename.match(/\.mdx?$/),
+}: {
+  match?: (props: { filename: string; src: string }) => boolean;
+} = {}) {
+  const compiler = mdx.createCompiler({});
+
+  return async function transformMdx(props: { filename: string; src: string }) {
+    if (!match(props)) {
+      return props;
+    }
+
     // Append this final rule at the end of the compiler chain:
     compiler.use(() => {
       return (tree, _file) => {
@@ -70,9 +81,10 @@ export async function transform(props: { filename: string; src: string }) {
 
     props.src = getTemplate(contents);
 
-    // console.log("\n-----\n");
-    // console.log("Compiled MDX file:", props.filename, "\n", props.src);
-    // console.log("\n-----\n");
-  }
-  return props;
+    debug("Compiled MDX file:", props.filename, "\n", props.src);
+
+    return props;
+  };
 }
+
+export const transform = createTransformer();
