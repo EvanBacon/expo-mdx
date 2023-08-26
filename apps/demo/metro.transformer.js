@@ -1,10 +1,12 @@
 const upstreamTransformer = require("metro-react-native-babel-transformer");
 const MdxTransformer = require("@bacons/mdx/metro-transformer");
 
+const mdxTransformer = MdxTransformer.createTransformer({});
+
 module.exports.transform = async (props) => {
   // Then pass it to the upstream transformer.
   return upstreamTransformer.transform(
     // Transpile MDX first.
-    await MdxTransformer.transform(props)
+    await mdxTransformer.transform(props)
   );
 };

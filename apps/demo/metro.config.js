@@ -5,6 +5,8 @@ const config = getDefaultConfig(__dirname);
 
 config.resolver.sourceExts.push("md", "mdx");
 
-config.transformer.babelTransformerPath = require.resolve("./transformer.js");
+config.transformer.babelTransformerPath = require.resolve(
+  "./metro.transformer.js"
+);
 
 module.exports = config;
