@@ -54,10 +54,6 @@ export function createTransformer({
 } = {}) {
   const compiler = mdx.createCompiler({ remarkPlugins }) as Processor;
 
-  // for (const plugin of remarkPlugins) {
-  //   compiler.use(plugin);
-  // }
-
   // Append this final rule at the end of the compiler chain:
   compiler.use(() => {
     return (tree, _file) => {
