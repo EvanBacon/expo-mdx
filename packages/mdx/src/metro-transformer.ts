@@ -12,12 +12,11 @@ const getTemplate = (rawMdxString) => {
   );
 
   return `import { useMDXComponents } from "@bacons/mdx";
-  ${makeExpoMetroProvidedTemplate}
-  
-  ${replacedShortcodes.replace(
-    "return <MDXLayout",
-    "const html = useMDXComponents();\n  const MDXLayout = html.Wrapper;\n  return <MDXLayout"
-  )}`;
+${makeExpoMetroProvidedTemplate}
+${replacedShortcodes.replace(
+  "return <MDXLayout",
+  "const html = useMDXComponents();\n  const MDXLayout = html.Wrapper;\n  return <MDXLayout"
+)}`;
 };
 
 const makeExpoMetroProvidedTemplate = `
@@ -28,8 +27,7 @@ const makeExpoMetroProvided = name => function MDXExpoMetroComponent(props) {
     return <html.span {...props}/>
   }
   return html[name](props);
-};
-`;
+};`;
 
 function isParent(node: any): node is Parent {
   return Array.isArray(node?.children);
@@ -38,6 +36,7 @@ function isParent(node: any): node is Parent {
 export function createTransformer({
   matchFile = (props) => !!props.filename.match(/\.mdx?$/),
   matchLocalAsset = (props) => !!props.src.match(/^[.@]/),
+  remarkPlugins = [],
 }: {
   /**
    * @param props Metro transform props.
@@ -50,15 +49,22 @@ export function createTransformer({
    * @default Function that matches strings starting with `.` or `@`.
    */
   matchLocalAsset?: (props: { src: string }) => boolean;
+
+  remarkPlugins?: any[];
 } = {}) {
-  const compiler = mdx.createCompiler({}) as Processor;
+  const compiler = mdx.createCompiler({ remarkPlugins }) as Processor;
+
+  // for (const plugin of remarkPlugins) {
+  //   compiler.use(plugin);
+  // }
+
   // Append this final rule at the end of the compiler chain:
   compiler.use(() => {
     return (tree, _file) => {
       if (isParent(tree)) {
         const walkForImages = (node: any) => {
           if (node.tagName === "img") {
-            if (matchLocalAsset(node.properties.src)) {
+            if (matchLocalAsset(node.properties)) {
               // Relative path should be turned into a require statement:
               node.properties.src = `[[_Expo_MemberProperty:require("${node.properties.src}")]]`;
               // delete node.properties.src;
