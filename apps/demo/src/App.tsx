@@ -1,6 +1,6 @@
 import Demo from "./tester.mdx";
 
-import { ScrollView, Text, SafeAreaView } from "react-native";
+import { ScrollView, Text, SafeAreaView, Platform } from "react-native";
 import { MDXStyles, MDXComponents } from "@bacons/mdx";
 import { View } from "@bacons/react-views";
 export default function App() {
@@ -63,9 +63,15 @@ function MediumStyle({ children }) {
       }}
       p={{
         //   fontFamily: "Inter_400Regular",
-        lineHeight: 30,
-        fontSize: 20,
-        marginBottom: 8,
+
+        fontSize: Platform.select({
+          web: "1rem",
+          default: 16,
+        }),
+        marginBottom: Platform.select({
+          web: "1.25em",
+          default: 16,
+        }),
       }}
       blockquote={{
         //   fontFamily: "Inter_400Regular",

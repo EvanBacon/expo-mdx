@@ -2,7 +2,10 @@ import * as React from "react";
 
 import { getBaseElements } from "./getBaseElements";
 
-type Elements = Record<keyof ReturnType<typeof getBaseElements>, JSX.Element>;
+type Elements = Record<
+  keyof ReturnType<typeof getBaseElements>,
+  (props: any) => JSX.Element
+>;
 
 export const MDXComponentsContext = React.createContext<Elements>(
   // @ts-expect-error
