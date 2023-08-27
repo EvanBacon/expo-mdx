@@ -9,7 +9,7 @@ export default function remarkLinkRewrite() {
       return;
     }
 
-    visit(tree, "code", (node) => {
+    visit(tree, "code", (node: any) => {
       if (node.meta) {
         node.value = "@@@" + node.meta + "@@@" + node.value;
       }
@@ -17,4 +17,5 @@ export default function remarkLinkRewrite() {
   };
 }
 
+// @ts-ignore
 module.exports = remarkLinkRewrite;

@@ -1,7 +1,10 @@
 const upstreamTransformer = require("metro-react-native-babel-transformer");
 const MdxTransformer = require("@bacons/mdx/metro-transformer");
+const remarkMDXFrontmatter = require("remark-mdx-frontmatter");
 
-const mdxTransformer = MdxTransformer.createTransformer({});
+const mdxTransformer = MdxTransformer.createTransformer({
+  remarkPlugins: [[remarkMDXFrontmatter, { name: "meta" }]],
+});
 
 module.exports.transform = async (props) => {
   // Then pass it to the upstream transformer.

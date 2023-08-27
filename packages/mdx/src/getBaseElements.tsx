@@ -39,9 +39,9 @@ export function getBaseElements() {
     h2: wrapHeader(htmlElements.H2),
     h3: wrapHeader(htmlElements.H3),
     h4: wrapHeader(htmlElements.H4),
-    h5: htmlElements.H5,
-    h6: htmlElements.H6,
-    a: htmlElements.A,
+    h5: stripExtras(htmlElements.H5),
+    h6: stripExtras(htmlElements.H6),
+    a: stripExtras(htmlElements.A),
 
     ul: List.UL,
     // TODO
@@ -49,39 +49,52 @@ export function getBaseElements() {
     // TODO
     ol: List.UL,
 
-    nav: htmlElements.Nav,
-    footer: htmlElements.Footer,
-    aside: htmlElements.Aside,
-    header: htmlElements.Header,
-    main: htmlElements.Main,
-    article: htmlElements.Article,
-    section: htmlElements.Section,
+    nav: stripExtras(htmlElements.Nav),
+    footer: stripExtras(htmlElements.Footer),
+    aside: stripExtras(htmlElements.Aside),
+    header: stripExtras(htmlElements.Header),
+    main: stripExtras(htmlElements.Main),
+    article: stripExtras(htmlElements.Article),
+    section: stripExtras(htmlElements.Section),
 
-    p: wrapHeader(htmlElements.P),
-    b: htmlElements.B,
-    s: htmlElements.S,
-    i: htmlElements.I,
-    q: htmlElements.Q,
-    blockquote: htmlElements.BlockQuote,
-    br: htmlElements.BR,
-    mark: htmlElements.Mark,
-    code: htmlElements.Code,
+    p: Paragraph,
+    b: stripExtras(htmlElements.B),
+    s: stripExtras(htmlElements.S),
+    i: stripExtras(htmlElements.I),
+    q: stripExtras(htmlElements.Q),
+    blockquote: stripExtras(htmlElements.BlockQuote),
+    br: stripExtras(htmlElements.BR),
+    mark: stripExtras(htmlElements.Mark),
+    code: stripExtras(htmlElements.Code),
     // TODO
-    inlineCode: htmlElements.Code,
+    inlineCode: stripExtras(htmlElements.Code),
 
-    pre: htmlElements.Pre,
-    time: htmlElements.Time,
-    strong: htmlElements.Strong,
-    del: htmlElements.Del,
-    em: htmlElements.EM,
+    pre: stripExtras(htmlElements.Pre),
+    time: stripExtras(htmlElements.Time),
+    strong: stripExtras(htmlElements.Strong),
+    del: stripExtras(htmlElements.Del),
+    em: stripExtras(htmlElements.EM),
 
-    hr: htmlElements.HR,
+    hr: stripExtras(htmlElements.HR),
 
     div: Div,
     span: Text,
 
     img: Img,
   };
+}
+
+function Paragraph({ style, children }) {
+  // NOTE(EvanBacon): Unclear why, but mdxjs is wrapping an image in a paragraph tag.
+  // This can lead to nesting a div in a p on web, which is invalid.
+  const image = React.Children.toArray(children).find((child) => {
+    return typeof child === "object" && "props" in child && child.props.src;
+  });
+  if (image) {
+    return <>{children}</>;
+  }
+
+  return <Text style={style} children={children} />;
 }
 
 function Div(props) {
@@ -97,9 +110,32 @@ function Img({ src, style }) {
   return <AutoImage style={style} source={source} />;
 }
 
+function stripExtras(Element) {
+  function E({
+    firstChild,
+    lastChild,
+    firstOfType,
+    index,
+    prevSibling,
+    ...props
+  }) {
+    return <Element {...props} />;
+  }
+
+  E.displayName = Element.displayName;
+  return E;
+}
+
 function wrapHeader(Element) {
-  return function Header(props) {
-    const isFirst = props.index === 0;
+  return function Header({
+    firstChild,
+    lastChild,
+    firstOfType,
+    index,
+    prevSibling,
+    ...props
+  }) {
+    const isFirst = index === 0;
 
     return (
       <Element
