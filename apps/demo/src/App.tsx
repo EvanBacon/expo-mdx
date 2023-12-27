@@ -6,7 +6,9 @@ import { View } from "@bacons/react-views";
 export default function App() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <ScrollView>
+      <ScrollView contentContainerStyle={{ padding: 24 }}>
+        <Demo />
+
         <GitHubStyle>
           <MediumStyle>
             <Demo />

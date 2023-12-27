@@ -4,6 +4,7 @@ import React, { Children } from "react";
 import { Platform } from "react-native";
 
 import { AutoImage } from "./AutoImage";
+import * as headings from "./headings";
 import * as List from "./list/List";
 
 export function getBaseElements() {
@@ -35,12 +36,13 @@ export function getBaseElements() {
       });
     },
 
-    h1: wrapHeader(htmlElements.H1),
-    h2: wrapHeader(htmlElements.H2),
-    h3: wrapHeader(htmlElements.H3),
-    h4: wrapHeader(htmlElements.H4),
-    h5: stripExtras(htmlElements.H5),
-    h6: stripExtras(htmlElements.H6),
+    h1: wrapHeader(headings.H1),
+    h2: wrapHeader(headings.H2),
+    h3: wrapHeader(headings.H3),
+    h4: wrapHeader(headings.H4),
+    h5: stripExtras(headings.H5),
+    h6: stripExtras(headings.H6),
+
     a: stripExtras(htmlElements.A),
 
     ul: List.UL,
