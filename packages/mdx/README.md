@@ -31,7 +31,7 @@ Create a custom metro transformer. This is used to transform MDX files into JS +
 `./transformer.js`
 
 ```js
-const upstreamTransformer = require("metro-react-native-babel-transformer");
+const upstreamTransformer = require('@expo/metro-config/babel-transformer');
 const MdxTransformer = require("@bacons/mdx/metro-transformer");
 
 module.exports.transform = async (props) => {

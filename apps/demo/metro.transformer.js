@@ -1,4 +1,4 @@
-const upstreamTransformer = require("metro-react-native-babel-transformer");
+const upstreamTransformer = require('@expo/metro-config/babel-transformer');
 const MdxTransformer = require("@bacons/mdx/metro-transformer");
 const remarkMDXFrontmatter = require("remark-mdx-frontmatter");
 
