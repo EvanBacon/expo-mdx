@@ -23,7 +23,16 @@ export function createMissingView(name: string) {
     };
 
     // Add better errors and warnings in development builds.
-    View = function View(props: ViewProps) {
+    View = function View(
+      props: ViewProps & {
+        // These are injected by the React babel plugin/preset. They may go away in React 19.
+        $$source?: {
+          lineNumber: number;
+          columnNumber: number;
+          fileName: string;
+        };
+      }
+    ) {
       React.useEffect(() => {
         const { $$source } = props;
         console.error(

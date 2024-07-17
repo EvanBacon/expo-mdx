@@ -19,7 +19,7 @@ export const UL = createView(
 type LIProps = TextProps | ViewProps;
 
 export const LI = forwardRef((props: PropsWithChildren<LIProps>, ref: any) => {
-  const accessibilityRole: LIProps["accessibilityRole"] = Platform.select({
+  const accessibilityRole = Platform.select({
     web: "listitem",
     default: props.accessibilityRole ?? props.role,
   });

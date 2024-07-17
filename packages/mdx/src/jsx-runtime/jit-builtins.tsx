@@ -23,7 +23,7 @@ export default function withJitBuiltIns(jsx: JSXFunction): JSXFunction {
   return function (type, props, ...rest) {
     if (typeof type === "string" && /^[a-z]/.test(type)) {
       const [, , __source] = rest;
-      // Add the source to the props for improving the error message.
+      // @ts-expect-error: Add the source to the props for improving the error message.
       props.$$source = __source;
 
       if (nativeComponentsCache.has(type)) {
