@@ -2,12 +2,12 @@ import { TextStyle } from "@expo/html-elements/build/primitives/Text";
 import { ViewStyle } from "@expo/html-elements/build/primitives/View";
 import * as React from "react";
 
-import { getBaseElements } from "./getBaseElements";
+import { getUniversalComponents } from "./getUniversalComponents";
 
 // React.ComponentProps<RenderMdx>
 
 type Styles = Partial<
-  Record<keyof ReturnType<typeof getBaseElements>, TextStyle | ViewStyle>
+  Record<keyof ReturnType<typeof getUniversalComponents>, TextStyle | ViewStyle>
 >;
 
 export const MDXStylesContext = React.createContext<Styles>({});

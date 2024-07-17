@@ -1,20 +1,20 @@
 import * as React from "react";
 
-import { getBaseElements } from "./getBaseElements";
+import { getUniversalComponents } from "./getUniversalComponents";
 
 type Elements = Record<
-  keyof ReturnType<typeof getBaseElements>,
+  keyof ReturnType<typeof getUniversalComponents>,
   (props: any) => JSX.Element
 >;
 
 export const MDXComponentsContext = React.createContext<Elements>(
-  getBaseElements()
+  getUniversalComponents()
 );
 
 export function useInternalMDXComponents() {
   const context = React.useContext(MDXComponentsContext);
   if (!context) {
-    return getBaseElements();
+    return getUniversalComponents();
   }
   return context;
 }

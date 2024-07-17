@@ -4,7 +4,7 @@
     "target": "es2019",
     "module": "commonjs",
     "outDir": "./build",
-    "jsx": "react"
+    "jsx": "preserve"
   },
   "include": ["./src"],
   "exclude": ["**/__mocks__/*", "**/__tests__/*"]

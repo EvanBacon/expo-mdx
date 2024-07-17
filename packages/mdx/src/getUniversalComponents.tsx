@@ -1,96 +1,34 @@
 import { Image, Text, View } from "@bacons/react-views";
 import * as htmlElements from "@expo/html-elements";
-import React, { Children } from "react";
+import React from "react";
 import { Platform } from "react-native";
 
 import { AutoImage } from "./AutoImage";
 import * as headings from "./headings";
 import * as List from "./list/List";
 
-const OrderContext = React.createContext<{
-  index: number;
-  firstChild: boolean;
-  lastChild: boolean;
-  firstOfType: boolean;
-  prevSibling: string;
-} | null>(null);
+import { getDOMComponents, stripExtras } from "./getDOMComponents";
 
-
-export function getBaseElements() {
-  const passthroughElements = [
-    "table",
-    "thead",
-    "tbody",
-    "tfoot",
-    "th",
-    "tr",
-    "td",
-    "caption",
-
-    // Task lists
-    "sup",
-    "ul",
-    "li",
-    "ol",
-    "input",
-  ].map((elementName) => [elementName, stripExtras(Platform.OS === 'web' ? elementName : View, elementName)]);
-
+/**
+ * Get base elements that are generally optimized for cross-platform usage.
+ * These are less standard on the web as they use `react-native-web` wrappers,
+ * but they will run on platforms that support React Native.
+ */
+export function getUniversalComponents() {
   return {
     // Defaults to ensure web always works since this is a web-first feature.
     // Native can be extended as needed.
-    ...Object.fromEntries(passthroughElements),
+    ...getDOMComponents(),
 
     ...Platform.select({
-    
       native: {
         ul: List.UL,
         // TODO
         li: List.LI,
         // TODO
-        ol: List.UL,    
-      }
+        ol: List.UL,
+      },
     }),
-
-    Wrapper: ({ children }) => {
-      const prevChildTypes = ["root"];
-      const childrenCount = Children.count(children);
-      return Children.map(children, (child, index) => {
-        if (typeof child === "string") {
-          return child;
-        }
-        const prevSibling = prevChildTypes[prevChildTypes.length - 1];
-        const mdxType = child.props.mdxType || "element";
-        const isFirstOfType =
-          prevChildTypes[prevChildTypes.length - 1] !== mdxType;
-        prevChildTypes.push(mdxType);
-
-        return (
-          <OrderContext.Provider
-            value={{
-              index,
-              firstChild: index === 0,
-              lastChild: index === childrenCount - 1,
-              firstOfType: isFirstOfType,
-              prevSibling,
-            }}
-          >
-            {child}
-          </OrderContext.Provider>
-        );
-        //  React.cloneElement(
-        //   child,
-        //   {
-        //     ...child.props,
-        //     index,
-        //     firstChild: index === 0,
-        //     lastChild: index === childrenCount - 1,
-        //     firstOfType: isFirstOfType,
-        //     prevSibling,
-        //   },
-        //   child.props.children
-        // );
-      });
-    },
 
     h1: wrapHeader(headings.H1),
     h2: wrapHeader(headings.H2),
@@ -98,10 +36,7 @@ export function getBaseElements() {
     h4: wrapHeader(headings.H4),
     h5: stripExtras(headings.H5),
     h6: stripExtras(headings.H6),
-
     a: stripExtras(htmlElements.A),
-
-  
     nav: stripExtras(htmlElements.Nav),
     footer: stripExtras(htmlElements.Footer),
     aside: stripExtras(htmlElements.Aside),
@@ -129,10 +64,8 @@ export function getBaseElements() {
     em: stripExtras(htmlElements.EM),
 
     hr: stripExtras(htmlElements.HR),
-
     div: Div,
     span: Text,
-
     img: Img,
   };
 }
@@ -161,29 +94,6 @@ function Img({ src, style }) {
   }
 
   return <AutoImage style={style} source={source} />;
-}
-
-function stripExtras(Element, displayName?: string) {
-  function E({
-    firstChild,
-    lastChild,
-    firstOfType,
-    index,
-    prevSibling,
-    parentName,
-    ...props
-  }) {
-    return React.createElement(Element, props);
-  }
-
-  if (displayName != null) {
-    E.displayName = displayName;
-  } else if (typeof Element === "string") {
-    E.displayName = Element;
-  } else if ("displayName" in Element) {
-    E.displayName = Element.displayName;
-  }
-  return E;
 }
 
 function wrapHeader(Element) {

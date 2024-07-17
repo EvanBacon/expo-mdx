@@ -2,7 +2,7 @@
   "name": "@bacons/mdx",
   "version": "0.3.0",
   "description": "Universal MDX renderer for React Native",
-  "main": "build/index.js",
+  "main": "build/index",
   "files": [
     "build",
     "jsx-runtime.js",
