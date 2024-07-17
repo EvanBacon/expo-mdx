@@ -5,6 +5,8 @@
   "main": "build/index.js",
   "files": [
     "build",
+    "jsx-runtime.js",
+    "jsx-dev-runtime.js",
     "metro-transformer.js",
     "metro-transformer.d.ts"
   ],

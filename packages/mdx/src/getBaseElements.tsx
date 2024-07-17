@@ -15,6 +15,7 @@ const OrderContext = React.createContext<{
   prevSibling: string;
 } | null>(null);
 
+
 export function getBaseElements() {
   const passthroughElements = [
     "table",
@@ -32,12 +33,23 @@ export function getBaseElements() {
     "li",
     "ol",
     "input",
-  ].map((elementName) => [elementName, stripExtras(elementName)]);
+  ].map((elementName) => [elementName, stripExtras(Platform.OS === 'web' ? elementName : View, elementName)]);
 
   return {
     // Defaults to ensure web always works since this is a web-first feature.
     // Native can be extended as needed.
     ...Object.fromEntries(passthroughElements),
+
+    ...Platform.select({
+    
+      native: {
+        ul: List.UL,
+        // TODO
+        li: List.LI,
+        // TODO
+        ol: List.UL,    
+      }
+    }),
 
     Wrapper: ({ children }) => {
       const prevChildTypes = ["root"];
@@ -89,12 +101,7 @@ export function getBaseElements() {
 
     a: stripExtras(htmlElements.A),
 
-    ul: List.UL,
-    // TODO
-    li: List.LI,
-    // TODO
-    ol: List.UL,
-
+  
     nav: stripExtras(htmlElements.Nav),
     footer: stripExtras(htmlElements.Footer),
     aside: stripExtras(htmlElements.Aside),
@@ -156,7 +163,7 @@ function Img({ src, style }) {
   return <AutoImage style={style} source={source} />;
 }
 
-function stripExtras(Element) {
+function stripExtras(Element, displayName?: string) {
   function E({
     firstChild,
     lastChild,
@@ -169,7 +176,9 @@ function stripExtras(Element) {
     return React.createElement(Element, props);
   }
 
-  if (typeof Element === "string") {
+  if (displayName != null) {
+    E.displayName = displayName;
+  } else if (typeof Element === "string") {
     E.displayName = Element;
   } else if ("displayName" in Element) {
     E.displayName = Element.displayName;

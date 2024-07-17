@@ -31,7 +31,7 @@ Create a custom metro transformer. This is used to transform MDX files into JS +
 `./transformer.js`
 
 ```js
-const upstreamTransformer = require('@expo/metro-config/babel-transformer');
+const upstreamTransformer = require("@expo/metro-config/babel-transformer");
 const MdxTransformer = require("@bacons/mdx/metro-transformer");
 
 module.exports.transform = async (props) => {
@@ -147,6 +147,36 @@ declare module "*.mdx" {
   function Component(props: any): JSX.Element;
   export default Component;
 }
+```
+
+## Experimental native errors
+
+> Optional native-only step, not required for MDX to work.
+
+React Native has suboptimal error messages for when you use React DOM components on native or render strings outside of `<Text />` elements. This can make migration and code sharing very painful. This package has an experimental dev-only feature to print out optimized errors when you render react-dom built-in's such as div, p, h1, etc. on native.
+
+Simply add the following to your `babel.config.js`, and clear the transform cache `npx expo start --clear`:
+
+```js
+module.exports = function (api) {
+  api.cache(true);
+  return {
+    presets: [["babel-preset-expo", { jsxImportSource: "@bacons/mdx" }]],
+  };
+};
+```
+
+Now when you render a div, p, h1, etc. on native, you will get a helpful error message.
+
+```js
+export default function App() {
+  return <div>Hey</div>;
+}
+```
+
+```log
+ERROR  Unsupported DOM <p /> at: /Users/evanbacon/Documents/GitHub/bacons/mdx/apps/demo/src/App.tsx:1:11
+This will break in production.
 ```
 
 ## Next.js Ussage
