@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "postinstall": "expo-yarn-workspaces check-workspace-dependencies",
     "start": "lerna run build --parallel -- --watch",
     "prepare": "lerna run prepare --parallel"
   },
@@ -12,12 +11,11 @@
     "packages/*"
   ],
   "resolutions": {
-    "expo": "^50",
+    "expo": "^51",
     "fs-extra": "^9.1.0"
   },
   "devDependencies": {
     "eslint": "^8.10.0",
-    "expo-yarn-workspaces": "^2.0.2",
     "lerna": "3.4.1",
     "prettier": "^2.2.1",
     "ts-node": "^10.0.0",

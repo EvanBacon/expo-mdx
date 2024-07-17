@@ -1,21 +1,56 @@
+import { MDXComponents, MDXStyles } from "@bacons/mdx";
+import { View } from "@bacons/react-views";
+import { Try } from "expo-router/build/views/Try";
+import { Platform, SafeAreaView, ScrollView, Text } from "react-native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+
 import Demo from "./tester.mdx";
 
-import { ScrollView, Text, SafeAreaView, Platform } from "react-native";
-import { MDXStyles, MDXComponents } from "@bacons/mdx";
-import { View } from "@bacons/react-views";
+const tests = require.context("./supported", true, /\.mdx$/);
+
 export default function App() {
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <ScrollView contentContainerStyle={{ padding: 24 }}>
-        <Demo />
+    <SafeAreaProvider>
+      <SafeAreaView style={{ flex: 1 }}>
+        <ScrollView contentContainerStyle={{ padding: 24 }}>
+          <RenderTests />
 
-        <GitHubStyle>
-          <MediumStyle>
-            <Demo />
-          </MediumStyle>
-        </GitHubStyle>
-      </ScrollView>
-    </SafeAreaView>
+          <GitHubStyle>
+            <MediumStyle>
+              <Demo />
+            </MediumStyle>
+          </GitHubStyle>
+        </ScrollView>
+      </SafeAreaView>
+    </SafeAreaProvider>
+  );
+}
+
+function RenderTests() {
+  return (
+    <View style={{ gap: 12 }}>
+      {tests.keys().map((key) => {
+        const Test = tests(key).default;
+        return (
+          <View key={key} style={{ borderWidth: 1, padding: 8, gap: 8 }}>
+            <Text style={{ fontSize: 20, fontWeight: "bold" }}>{key}</Text>
+            <View style={{ borderWidth: 1 }}>
+              <Try
+                catch={(props) => {
+                  return (
+                    <Text style={{ color: "red" }}>
+                      Failed to render test "{key}": {props.error.message}
+                    </Text>
+                  );
+                }}
+              >
+                <Test key={key} />
+              </Try>
+            </View>
+          </View>
+        );
+      })}
+    </View>
   );
 }
 

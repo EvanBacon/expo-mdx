@@ -8,11 +8,10 @@ type Elements = Record<
 >;
 
 export const MDXComponentsContext = React.createContext<Elements>(
-  // @ts-expect-error
   getBaseElements()
 );
 
-export function useMDXComponents() {
+export function useInternalMDXComponents() {
   const context = React.useContext(MDXComponentsContext);
   if (!context) {
     return getBaseElements();
@@ -29,7 +28,7 @@ export function MDXComponents({
   components?: Record<string, React.ReactNode>;
 } & Partial<Elements>) {
   const allProps = { ...props, ...components };
-  const parent = useMDXComponents();
+  const parent = useInternalMDXComponents();
   const value = React.useMemo(
     () => ({
       ...Object.keys({ ...allProps, ...parent }).reduce((acc, key) => {

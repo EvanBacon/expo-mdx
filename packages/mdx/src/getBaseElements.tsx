@@ -7,8 +7,38 @@ import { AutoImage } from "./AutoImage";
 import * as headings from "./headings";
 import * as List from "./list/List";
 
+const OrderContext = React.createContext<{
+  index: number;
+  firstChild: boolean;
+  lastChild: boolean;
+  firstOfType: boolean;
+  prevSibling: string;
+} | null>(null);
+
 export function getBaseElements() {
+  const passthroughElements = [
+    "table",
+    "thead",
+    "tbody",
+    "tfoot",
+    "th",
+    "tr",
+    "td",
+    "caption",
+
+    // Task lists
+    "sup",
+    "ul",
+    "li",
+    "ol",
+    "input",
+  ].map((elementName) => [elementName, stripExtras(elementName)]);
+
   return {
+    // Defaults to ensure web always works since this is a web-first feature.
+    // Native can be extended as needed.
+    ...Object.fromEntries(passthroughElements),
+
     Wrapper: ({ children }) => {
       const prevChildTypes = ["root"];
       const childrenCount = Children.count(children);
@@ -21,18 +51,32 @@ export function getBaseElements() {
         const isFirstOfType =
           prevChildTypes[prevChildTypes.length - 1] !== mdxType;
         prevChildTypes.push(mdxType);
-        return React.cloneElement(
-          child,
-          {
-            ...child.props,
-            index,
-            firstChild: index === 0,
-            lastChild: index === childrenCount - 1,
-            firstOfType: isFirstOfType,
-            prevSibling,
-          },
-          child.props.children
+
+        return (
+          <OrderContext.Provider
+            value={{
+              index,
+              firstChild: index === 0,
+              lastChild: index === childrenCount - 1,
+              firstOfType: isFirstOfType,
+              prevSibling,
+            }}
+          >
+            {child}
+          </OrderContext.Provider>
         );
+        //  React.cloneElement(
+        //   child,
+        //   {
+        //     ...child.props,
+        //     index,
+        //     firstChild: index === 0,
+        //     lastChild: index === childrenCount - 1,
+        //     firstOfType: isFirstOfType,
+        //     prevSibling,
+        //   },
+        //   child.props.children
+        // );
       });
     },
 
@@ -119,12 +163,17 @@ function stripExtras(Element) {
     firstOfType,
     index,
     prevSibling,
+    parentName,
     ...props
   }) {
-    return <Element {...props} />;
+    return React.createElement(Element, props);
   }
 
-  E.displayName = Element.displayName;
+  if (typeof Element === "string") {
+    E.displayName = Element;
+  } else if ("displayName" in Element) {
+    E.displayName = Element.displayName;
+  }
   return E;
 }
 
