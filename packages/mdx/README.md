@@ -179,6 +179,39 @@ ERROR  Unsupported DOM <p /> at: /Users/evanbacon/Documents/GitHub/bacons/mdx/ap
 This will break in production.
 ```
 
+## Web-only components
+
+It's possible to parse MDX to DOM elements instead of universal components. This can be useful when building for web-only or migrating from web-only. To do this, pull in the `getDOMComponents` function and pass it to the `MDXComponents` provider.
+
+```js
+import { MDXComponents, getDOMComponents } from "@bacons/mdx";
+
+import Demo from "./readme.md";
+
+export default function App() {
+  return (
+    <MDXComponents components={getDOMComponents()}>
+      <Demo />
+    </MDXComponents>
+  );
+}
+```
+
+This will render the following MDX as DOM elements:
+
+```md
+# Hello World
+
+I **am** a _markdown_ file!
+```
+
+And the DOM:
+
+```html
+<h1>Hello World</h1>
+<p>I <strong>am</strong> a <em>markdown</em> file!</p>
+```
+
 ## Next.js Ussage
 
 1. Follow steps detailed here: [https://nextjs.org/docs/advanced-features/using-mdx](https://nextjs.org/docs/advanced-features/using-mdx)
