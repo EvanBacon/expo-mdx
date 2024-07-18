@@ -226,3 +226,11 @@ And the DOM:
 
 - ol, li, ul are all buggy. PRs welcome.
 - Native image ratios are weird.
+
+## About this project
+
+This is a universal MDX implementation for Expo (React & Metro). It aims to be a general-purpose MDX implementation for Expo projects that leverage universal Metro (Expo CLI).
+
+- Test in the `apps/demo` project.
+
+This library powers my (Evan Bacon) [personal blog](https://evanbacon.dev/blog), the source can be found here: [Evan Bacon portfolio](https://github.com/EvanBacon/evanbacon.dev).
