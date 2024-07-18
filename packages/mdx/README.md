@@ -212,9 +212,9 @@ And the DOM:
 <p>I <strong>am</strong> a <em>markdown</em> file!</p>
 ```
 
-## Next.js Ussage
+## Next.js Usage
 
-1. Follow steps detailed here: [https://nextjs.org/docs/advanced-features/using-mdx](https://nextjs.org/docs/advanced-features/using-mdx)
+1. Follow the steps detailed here: [https://nextjs.org/docs/advanced-features/using-mdx](https://nextjs.org/docs/advanced-features/using-mdx)
 2. Add the following packages to `transpile-modules` within your `next.config.js`:
    ```js
    '@bacons/mdx',
