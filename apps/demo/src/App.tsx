@@ -1,4 +1,4 @@
-import { MDXComponents, MDXStyles } from "@bacons/mdx";
+import { MDXComponents, getDOMComponents, MDXStyles } from "@bacons/mdx";
 import { View } from "@bacons/react-views";
 import { Try } from "expo-router/build/views/Try";
 import { Platform, SafeAreaView, ScrollView, Text } from "react-native";
@@ -13,8 +13,9 @@ export default function App() {
     <SafeAreaProvider>
       <SafeAreaView style={{ flex: 1 }}>
         <ScrollView contentContainerStyle={{ padding: 24 }}>
-          <RenderTests />
-
+          <MDXComponents components={getDOMComponents()}>
+            <RenderTests />
+          </MDXComponents>
           <GitHubStyle>
             <MediumStyle>
               <Demo />
