@@ -4,6 +4,47 @@ import type { ViewProps } from "react-native";
 const NativeView = (props) => React.createElement("RCTView", props);
 const Text = (props) => React.createElement("RCTText", props);
 
+class Try extends React.Component<
+  React.PropsWithChildren<{
+    catch: ComponentType<{ error: Error }>;
+  }>,
+  { error?: Error }
+> {
+  state = { error: undefined };
+
+  static getDerivedStateFromError(error) {
+    return { error };
+  }
+
+  render() {
+    const { error } = this.state;
+    const { catch: ErrorBoundary, children } = this.props;
+    if (!error) {
+      return children;
+    }
+    return React.createElement(ErrorBoundary, { error });
+  }
+}
+
+function ErrorBoundary({ error }) {
+  if (error.message) {
+    // When a DOM component is rendered inside a node module that shipped without the jsx-runtime, we can only intercept the error from the renderer.
+    const invalidComponentName = error.message.match(
+      /View config getter callback for component `([^`]+)`/
+    )?.[1];
+    // Prevent wrapping the error for rendering an undefined component.
+    if (String(invalidComponentName) !== "undefined") {
+      return React.createElement(Text, { style: { color: "red" } }, [
+        `Unsupported DOM <${invalidComponentName} />`,
+      ]);
+    }
+  }
+
+  return React.createElement(Text, { style: { color: "red" } }, [
+    error.message,
+  ]);
+}
+
 export function createMissingView(name: string) {
   const stackItem = (src) => {
     if (typeof src === "object" && src && "fileName" in src) {
@@ -57,7 +98,11 @@ export function createMissingView(name: string) {
       });
       return children;
     }, [props.children]);
-    return React.createElement(NativeView, props, children);
+    return React.createElement(
+      NativeView,
+      props,
+      React.createElement(Try, { catch: ErrorBoundary }, children)
+    );
   };
 
   // Make the component stack show the name of the missing dom element.
