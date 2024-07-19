@@ -1,1 +1,1 @@
-module.exports = require("react/jsx-runtime");
+export * from "./jsx-runtime";
