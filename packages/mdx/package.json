@@ -1,18 +1,13 @@
 {
   "name": "@bacons/mdx",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Universal MDX renderer for React Native",
   "main": "build/index",
   "files": [
     "build",
-    "jsx-runtime.js",
-    "jsx-dev-runtime.js",
     "metro-transformer.js",
     "metro-transformer.d.ts",
-    "jsx-dev-runtime.js",
-    "jsx-dev-runtime.native.js",
-    "jsx-runtime.js",
-    "jsx-runtime.native.js"
+    "jsx"
   ],
   "scripts": {
     "build": "expo-module build",
