@@ -11,14 +11,9 @@ export const OrderContext = React.createContext<{
 } | null>(null);
 
 function MDImage({ src, ...props }) {
-  const resolvedSrc = React.useMemo(() => {
-    if (typeof src === "number") {
-      return resolveAssetUri(registry.getAssetByID(src));
-    }
-    return src;
-  }, [src]);
+  const resolvedSrc = React.useMemo(() => resolveAssetUri(src), [src]);
 
-  return <img {...props} src={resolvedSrc} />;
+  return <img {...props} src={resolvedSrc ?? undefined} />;
 }
 
 const svgDataUriPattern = /^(data:image\/svg\+xml;utf8,)(.*)/;
