@@ -86,13 +86,11 @@ export function createMissingView(name: string) {
           return;
         }
         if (typeof child === "string") {
-          console.log("child.string", child);
           // Wrap children with Text to prevent cryptic React errors when we already have a useful warning about the missing DOM element.
           children.push(
             React.createElement(Text, { key: String(index) }, [child])
           );
         } else {
-          console.log("child.other", child);
           children.push(child);
         }
       });
