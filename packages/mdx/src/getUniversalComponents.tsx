@@ -7,14 +7,21 @@ import { AutoImage } from "./AutoImage";
 import * as headings from "./headings";
 import * as List from "./list/List";
 
-import { getDOMComponents, stripExtras } from "./getDOMComponents";
+import {
+  ComponentKeys,
+  getDOMComponents,
+  stripExtras,
+} from "./getDOMComponents";
 
 /**
  * Get base elements that are generally optimized for cross-platform usage.
  * These are less standard on the web as they use `react-native-web` wrappers,
  * but they will run on platforms that support React Native.
  */
-export function getUniversalComponents() {
+export function getUniversalComponents(): Record<
+  ComponentKeys,
+  React.ComponentType<any>
+> {
   return {
     // Defaults to ensure web always works since this is a web-first feature.
     // Native can be extended as needed.

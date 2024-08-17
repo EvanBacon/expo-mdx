@@ -67,61 +67,74 @@ function resolveAssetUri(source) {
   return uri;
 }
 
+const HTML_KEYS = [
+  "h1",
+  "h2",
+  "h3",
+  "h4",
+  "h5",
+  "h6",
+  "a",
+  "nav",
+  "footer",
+  "aside",
+  "header",
+  "main",
+  "article",
+  "section",
+  "p",
+  "b",
+  "s",
+  "i",
+  "q",
+  "blockquote",
+  "br",
+  "mark",
+  "code",
+
+  "pre",
+  "time",
+  "strong",
+  "del",
+  "em",
+  "hr",
+  "div",
+  "span",
+  "img",
+
+  "table",
+  "thead",
+  "tbody",
+  "tfoot",
+  "th",
+  "tr",
+  "td",
+  "caption",
+
+  // Task lists
+  "sup",
+  "ul",
+  "li",
+  "ol",
+  "input",
+] as const;
+
+export type ComponentKeys =
+  | "Wrapper"
+  | "inlineCode"
+  | (typeof HTML_KEYS)[number];
+
 /**
  * Get base elements that work natively to the browser. If the native app has any of these views built-in, then they can be used there too.
  */
-export function getDOMComponents() {
-  const passthroughElements = [
-    "h1",
-    "h2",
-    "h3",
-    "h4",
-    "h5",
-    "h6",
-    "a",
-    "nav",
-    "footer",
-    "aside",
-    "header",
-    "main",
-    "article",
-    "section",
-    "p",
-    "b",
-    "s",
-    "i",
-    "q",
-    "blockquote",
-    "br",
-    "mark",
-    "code",
-
-    "pre",
-    "time",
-    "strong",
-    "del",
-    "em",
-    "hr",
-    "div",
-    "span",
-    "img",
-
-    "table",
-    "thead",
-    "tbody",
-    "tfoot",
-    "th",
-    "tr",
-    "td",
-    "caption",
-
-    // Task lists
-    "sup",
-    "ul",
-    "li",
-    "ol",
-    "input",
-  ].map((elementName) => [elementName, stripExtras(elementName)]);
+export function getDOMComponents(): Record<
+  ComponentKeys,
+  React.ComponentType<any>
+> {
+  const passthroughElements = HTML_KEYS.map((elementName) => [
+    elementName,
+    stripExtras(elementName),
+  ]);
 
   return {
     // Defaults to ensure web always works since this is a web-first feature.
