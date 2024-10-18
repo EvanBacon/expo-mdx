@@ -13,9 +13,7 @@ export default function App() {
     <SafeAreaProvider>
       <SafeAreaView style={{ flex: 1 }}>
         <ScrollView contentContainerStyle={{ padding: 24 }}>
-          <MDXComponents components={getDOMComponents()}>
-            <RenderTests />
-          </MDXComponents>
+          <RenderTests />
           <GitHubStyle>
             <MediumStyle>
               <Demo />
@@ -45,7 +43,7 @@ function RenderTests() {
                   );
                 }}
               >
-                <Test key={key} />
+                <Test components={getDOMComponents()} />
               </Try>
             </View>
           </View>

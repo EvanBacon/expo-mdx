@@ -1,6 +1,6 @@
 # @bacons/mdx
 
-[MDX](https://mdxjs.com) support for React Native projects.
+Build-time [MDX](https://mdxjs.com) for Expo apps and websites.
 
 ## Add the package to your npm dependencies
 
@@ -71,6 +71,61 @@ export default function App() {
 }
 ```
 
+## Custom components
+
+By default, this package uses an incomplete set of universal React Native components for DOM elements. You may wish to improve the components, add more, or swap them out for your own.
+
+```js
+import { Text } from "react-native";
+import { MDXComponents } from "@bacons/mdx";
+
+export default function App() {
+  return (
+    <Demo
+      components={{
+        h1: (props) => <h1 {...props} />,
+        // Add custom components which can be used as JSX elements.
+        RedText: (props) => <Text {...props} style={{ color: "red" }} />,
+        // This can be used as `<RedText />` without the need to import it.
+      }}
+    />
+  );
+}
+```
+
+Now inside of your markdown file, you can use the custom components:
+
+```md
+# Hello World
+
+<RedText />
+```
+
+You can set the components for all children using the `MDXComponents` React context component.
+
+```js
+import { Text } from "react-native";
+import { MDXComponents } from "@bacons/mdx";
+
+export default function App() {
+  // Pass any HTML element as a key to the MDXComponents component.
+  return (
+    <MDXComponents
+      components={{
+        h1: (props) => <Text {...props} />,
+        // Add custom components which can be used as JSX elements.
+        RedText: (props) => <Text {...props} style={{ color: "red" }} />,
+        // This can be used as `<RedText />` without the need to import it.
+      }}
+    >
+      <Demo />
+    </MDXComponents>
+  );
+}
+```
+
+> Be sure to pass the `style` prop down to the component you're using, this is how the styles are cascaded.
+
 ## Custom styles
 
 This package works similarly to most docs sites. You create high-level styles for the entire site. This can be cascaded down to reduce the scope of a style.
@@ -96,33 +151,6 @@ export default function App() {
 
 The `<MDXStyles>` components can be stacked in different levels, think of these like CSS classes.
 
-## Custom components
-
-Probably I didn't get the elements right, most React Native markdown packages don't. You can unblock yourself by overwriting certain elements:
-
-```js
-import { Text } from "react-native";
-import { MDXComponents } from "@bacons/mdx";
-
-export default function App() {
-  // Pass any HTML element as a key to the MDXComponents component.
-  return (
-    <MDXComponents
-      components={{
-        h1: (props) => <Text {...props} />,
-        // Add custom components which can be used as JSX elements.
-        RedText: (props) => <Text {...props} style={{ color: "red" }} />,
-        // This can be used as `<RedText />` without the need to import it.
-      }}
-    >
-      <Demo />
-    </MDXComponents>
-  );
-}
-```
-
-> Just be sure to pass the `style` prop down to the component you're using, this is how the styles are cascaded.
-
 ## Typescript
 
 You can add support for importing `.mdx` files in your `tsconfig.json` file.
@@ -144,7 +172,11 @@ Now create a file that declares the module.
 
 ```ts
 declare module "*.mdx" {
-  function Component(props: any): JSX.Element;
+  import React from "react";
+  import { CustomComponentsProp } from "@bacons/mdx";
+  const Component: React.FC<{
+    components?: CustomComponentsProp;
+  }>;
   export default Component;
 }
 ```
@@ -181,19 +213,15 @@ This will break in production.
 
 ## Web-only components
 
-It's possible to parse MDX to DOM elements instead of universal components. This can be useful when building for web-only or migrating from web-only. To do this, pull in the `getDOMComponents` function and pass it to the `MDXComponents` provider.
+It's possible to parse MDX to DOM elements instead of universal components. This can be useful when building for web-only or migrating from web-only. To do this, pull in the `getDOMComponents` function and pass it to the `components` prop of the MDX component.
 
 ```js
-import { MDXComponents, getDOMComponents } from "@bacons/mdx";
+import { getDOMComponents } from "@bacons/mdx";
 
 import Demo from "./readme.md";
 
 export default function App() {
-  return (
-    <MDXComponents components={getDOMComponents()}>
-      <Demo />
-    </MDXComponents>
-  );
+  return <Demo components={getDOMComponents()} />;
 }
 ```
 

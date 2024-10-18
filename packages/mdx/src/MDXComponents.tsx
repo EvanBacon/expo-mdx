@@ -8,6 +8,15 @@ type Elements = Record<
   React.ComponentType<any>
 >;
 
+export type CustomComponentsProp = Partial<
+  Record<
+    | ComponentKeys
+    // Allow any arbitrary component to be passed in for use in MDX but don't allow it to show in the autocorrect.
+    | (string & {}),
+    React.ComponentType<any>
+  >
+>;
+
 export const MDXComponentsContext = React.createContext<Elements>(
   getUniversalComponents()
 );
@@ -26,14 +35,7 @@ export function MDXComponents({
   ...props
 }: {
   children?: any;
-  components?: Partial<
-    Record<
-      | ComponentKeys
-      // Allow any arbitrary component to be passed in for use in MDX but don't allow it to show in the autocorrect.
-      | (string & {}),
-      React.ComponentType<any>
-    >
-  >;
+  components?: CustomComponentsProp;
 } & Partial<Elements>) {
   const allProps = { ...props, ...components };
   const parent = useInternalMDXComponents();

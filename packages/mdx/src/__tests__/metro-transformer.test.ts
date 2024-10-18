@@ -30,13 +30,12 @@ describe(transform, () => {
     expect(result.src).toMatchInlineSnapshot(`
       "import { useMDXComponents } from \\"@bacons/mdx\\";
 
-      const makeExpoMetroProvided = name => function MDXExpoMetroComponent(props) {
-        const html = useMDXComponents();
-        if (html[name] == null) {
+      const makeExpoMetroProvided = name => function MDXExpoMetroComponent({ __components, ...props}) {
+        if (__components[name] == null) {
           console.warn(\\"Component \\" + name + \\" was not imported, exported, or provided by MDXProvider as global scope\\")
-          return <html.span {...props}/>
+          return <__components.span {...props}/>
         }
-        return html[name](props);
+        return __components[name](props);
       };
 
 
@@ -49,7 +48,7 @@ describe(transform, () => {
         components,
         ...props
       }) {
-        const html = useMDXComponents();
+        const html = { ...useMDXComponents(), ...(components ?? {}) };
         const MDXLayout = html.Wrapper;
         return <MDXLayout {...layoutProps} {...props} components={components} mdxType=\\"MDXLayout\\">
           <html.h1>{\`Hello World\`}</html.h1>
@@ -64,6 +63,99 @@ describe(transform, () => {
               \\"src\\": require(\\"./foo/bar.png\\"),
               \\"alt\\": \\"alt text\\"
             }}></html.img></html.p>
+          </MDXLayout>;
+      }
+      ;
+      MDXContent.isMDXComponent = true;"
+    `);
+  });
+
+  it(`should transform MDX with custom components`, async () => {
+    const result = await transform({
+      filename: "test.mdx",
+      //   src: `- 123`,
+      src: `
+# Hello World
+
+import Foo from './foo'
+
+<Foo />`,
+    });
+
+    expect(result.src).toMatchInlineSnapshot(`
+      "import { useMDXComponents } from \\"@bacons/mdx\\";
+
+      const makeExpoMetroProvided = name => function MDXExpoMetroComponent({ __components, ...props}) {
+        if (__components[name] == null) {
+          console.warn(\\"Component \\" + name + \\" was not imported, exported, or provided by MDXProvider as global scope\\")
+          return <__components.span {...props}/>
+        }
+        return __components[name](props);
+      };
+      import Foo from './foo'
+
+
+      const layoutProps = {
+        
+      };
+      const MDXLayout = \\"wrapper\\"
+      export default function MDXContent({
+        components,
+        ...props
+      }) {
+        const html = { ...useMDXComponents(), ...(components ?? {}) };
+        const MDXLayout = html.Wrapper;
+        return <MDXLayout {...layoutProps} {...props} components={components} mdxType=\\"MDXLayout\\">
+          <html.h1>{\`Hello World\`}</html.h1>
+
+          <Foo __components={html} mdxType=\\"Foo\\" />
+          </MDXLayout>;
+      }
+      ;
+      MDXContent.isMDXComponent = true;"
+    `);
+  });
+
+  it(`should transform MDX with custom components that were not imported`, async () => {
+    const result = await transform({
+      filename: "test.mdx",
+      //   src: `- 123`,
+      src: `
+# Hello World
+
+<Foo />`,
+    });
+
+    expect(result.src).toMatchInlineSnapshot(`
+      "import { useMDXComponents } from \\"@bacons/mdx\\";
+
+      const makeExpoMetroProvided = name => function MDXExpoMetroComponent({ __components, ...props}) {
+        if (__components[name] == null) {
+          console.warn(\\"Component \\" + name + \\" was not imported, exported, or provided by MDXProvider as global scope\\")
+          return <__components.span {...props}/>
+        }
+        return __components[name](props);
+      };
+
+
+      const makeShortcode = name => function MDXDefaultShortcode(props) {
+            console.warn(\\"Component \\" + name + \\" was not imported, exported, or provided by MDXProvider as global scope\\")
+            return <div {...props}/>
+          };
+      const Foo = makeExpoMetroProvided(\\"Foo\\");
+      const layoutProps = {
+        
+      };
+      const MDXLayout = \\"wrapper\\"
+      export default function MDXContent({
+        components,
+        ...props
+      }) {
+        const html = { ...useMDXComponents(), ...(components ?? {}) };
+        const MDXLayout = html.Wrapper;
+        return <MDXLayout {...layoutProps} {...props} components={components} mdxType=\\"MDXLayout\\">
+          <html.h1>{\`Hello World\`}</html.h1>
+          <Foo __components={html} mdxType=\\"Foo\\" />
           </MDXLayout>;
       }
       ;
@@ -109,8 +201,6 @@ console.log("hello")
       \`}</html.code></html.pre>"
     `);
   });
- 
-  
 
   it(`should transform with code title`, async () => {
     const { transform } = createTransformer({

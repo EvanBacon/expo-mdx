@@ -15,18 +15,17 @@ const getTemplate = (rawMdxString) => {
 ${makeExpoMetroProvidedTemplate}
 ${replacedShortcodes.replace(
   "return <MDXLayout",
-  "const html = useMDXComponents();\n  const MDXLayout = html.Wrapper;\n  return <MDXLayout"
+  "const html = { ...useMDXComponents(), ...(components ?? {}) };\n  const MDXLayout = html.Wrapper;\n  return <MDXLayout"
 )}`;
 };
 
 const makeExpoMetroProvidedTemplate = `
-const makeExpoMetroProvided = name => function MDXExpoMetroComponent(props) {
-  const html = useMDXComponents();
-  if (html[name] == null) {
+const makeExpoMetroProvided = name => function MDXExpoMetroComponent({ __components, ...props}) {
+  if (__components[name] == null) {
     console.warn("Component " + name + " was not imported, exported, or provided by MDXProvider as global scope")
-    return <html.span {...props}/>
+    return <__components.span {...props}/>
   }
-  return html[name](props);
+  return __components[name](props);
 };`;
 
 function isParent(node: any): node is Parent {
@@ -57,6 +56,25 @@ export function createTransformer({
   // Append this final rule at the end of the compiler chain:
   compiler.use(() => {
     return (tree, _file) => {
+      if (isParent(tree)) {
+        // Pass components={html} to custom components:
+        visit(tree, "jsx", (node) => {
+          if (
+            !("value" in node) ||
+            !node.value ||
+            typeof node.value !== "string"
+          ) {
+            return;
+          }
+          if (node.value.match(/<([A-Z][a-z]+)/)) {
+            node.value = node.value.replace(
+              /<([A-Z][a-z]+)/,
+              `<$1 __components={html} `
+            );
+          }
+        });
+      }
+
       if (isParent(tree)) {
         const walkForImages = (node: any) => {
           if (node.tagName === "img") {
