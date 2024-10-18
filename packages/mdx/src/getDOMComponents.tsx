@@ -12,14 +12,26 @@ export const OrderContext = React.createContext<{
 
 function MDImage({ src, ...props }) {
   const resolvedSrc = React.useMemo(() => resolveAssetUri(src), [src]);
-
-  return <img {...props} src={resolvedSrc ?? undefined} />;
+  return (
+    <img
+      width={resolvedSrc.width}
+      height={resolvedSrc.height}
+      {...props}
+      src={resolvedSrc.uri}
+    />
+  );
 }
 
 const svgDataUriPattern = /^(data:image\/svg\+xml;utf8,)(.*)/;
 
-function resolveAssetUri(source) {
+function resolveAssetUri(source): {
+  uri: string;
+  width?: number;
+  height?: number;
+} {
   let uri: string | null = null;
+  let width: number | undefined;
+  let height: number | undefined;
   if (typeof source === "number") {
     // get the URI from the packager
     let asset = registry.getAssetByID(source);
@@ -49,10 +61,14 @@ function resolveAssetUri(source) {
         "." +
         asset.type
       : "";
+
+    width = asset.width;
+    height = asset.height;
   } else if (typeof source === "string") {
     uri = source;
   } else if (source && typeof source.uri === "string") {
-    uri = source.uri;
+    // Expo SDK 52 and higher will return assets in ImageSource format.
+    return source;
   }
   if (uri) {
     const match = uri.match(svgDataUriPattern);
@@ -61,10 +77,12 @@ function resolveAssetUri(source) {
       const prefix = match[1];
       const svg = match[2];
       const encodedSvg = encodeURIComponent(svg);
-      return "" + prefix + encodedSvg;
+      return { uri: "" + prefix + encodedSvg };
     }
+  } else {
+    throw new Error('Unknown image source "' + source + '" used in MDX.');
   }
-  return uri;
+  return { uri, width, height };
 }
 
 const HTML_KEYS = [
