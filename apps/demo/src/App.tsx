@@ -10,7 +10,7 @@ const tests = require.context("./supported", true, /\.mdx$/);
 
 export default function App() {
   return (
-    <SafeAreaProvider>
+    <SafeAreaProvider style={{ backgroundColor: "white" }}>
       <SafeAreaView style={{ flex: 1 }}>
         <ScrollView contentContainerStyle={{ padding: 24 }}>
           <RenderTests />

@@ -81,6 +81,7 @@ function Paragraph({ style, children }) {
   // NOTE(EvanBacon): Unclear why, but mdxjs is wrapping an image in a paragraph tag.
   // This can lead to nesting a div in a p on web, which is invalid.
   const image = React.Children.toArray(children).find((child) => {
+    // @ts-expect-error
     return typeof child === "object" && "props" in child && child.props.src;
   });
   if (image) {
