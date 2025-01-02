@@ -6,7 +6,13 @@ type DeepNotReadOnly<T> = {
 export function withMdx(
   config: DeepNotReadOnly<import("@expo/metro-config").MetroConfig>
 ) {
-  if (!config.transformer.babelTransformerPath) {
+  if (
+    !config.transformer.babelTransformerPath ||
+    // Overwrite the default expo value.
+    config.transformer.babelTransformerPath.endsWith(
+      "@expo/metro-config/build/babel-transformer.js"
+    )
+  ) {
     config.transformer.babelTransformerPath = require.resolve(
       "@bacons/mdx/default-metro-transformer.js"
     );

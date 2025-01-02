@@ -16,7 +16,7 @@ Add support for importing `md` and `mdx` files in your `metro.config.js` file.
 
 ```js
 const { getDefaultConfig } = require("expo/metro-config");
-const { withMdx } = require("@bacons/mdx");
+const { withMdx } = require("@bacons/mdx/metro");
 
 const config = withMdx(getDefaultConfig(__dirname));
 
