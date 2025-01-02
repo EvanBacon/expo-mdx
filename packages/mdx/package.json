@@ -7,7 +7,9 @@
     "build",
     "metro-transformer.js",
     "metro-transformer.d.ts",
-    "jsx"
+    "jsx",
+    "metro.js",
+    "default-metro-transformer.js"
   ],
   "scripts": {
     "build": "expo-module build",

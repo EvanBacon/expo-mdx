@@ -16,6 +16,22 @@ Add support for importing `md` and `mdx` files in your `metro.config.js` file.
 
 ```js
 const { getDefaultConfig } = require("expo/metro-config");
+const { withMdx } = require("@bacons/mdx");
+
+const config = withMdx(getDefaultConfig(__dirname));
+
+module.exports = config;
+```
+
+<details>
+  <summary>Manual setup</summary>
+
+If you need to customize the `babelTransformerPath` more, than use this manual setup:
+
+`metro.config.js`
+
+```js
+const { getDefaultConfig } = require("expo/metro-config");
 
 const config = getDefaultConfig(__dirname);
 
@@ -42,6 +58,8 @@ module.exports.transform = async (props) => {
   );
 };
 ```
+
+</details>
 
 ## Usage
 
