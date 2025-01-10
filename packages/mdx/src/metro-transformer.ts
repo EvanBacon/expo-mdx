@@ -11,7 +11,8 @@ const getTemplate = (rawMdxString) => {
     "= makeExpoMetroProvided("
   );
 
-  return `import { useMDXComponents } from "@bacons/mdx";
+  return `"use client";
+import { useMDXComponents } from "@bacons/mdx";
 ${makeExpoMetroProvidedTemplate}
 ${replacedShortcodes.replace(
   "return <MDXLayout",
