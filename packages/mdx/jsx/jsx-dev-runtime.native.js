@@ -1,1 +1,1 @@
-module.exports = require("../build/jsx-runtime/jsx-dev-runtime");
+module.exports = require("../build/react/jsx-runtime/jsx-dev-runtime");

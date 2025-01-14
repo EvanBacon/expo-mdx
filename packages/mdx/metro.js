@@ -1,1 +1,1 @@
-module.exports = require("./build/metro");
+module.exports = require("./build/server/metro");

@@ -1,1 +1,1 @@
-module.exports = require("./build/metro-transformer");
+module.exports = require("./build/server/metro-transformer");

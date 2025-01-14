@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "target": "es2019",
+    "module": "commonjs",
+    "outDir": "./build/react",
+    "jsx": "preserve",
+    "emitDeclarationOnly": false
+  },
+  "include": ["./src/react"],
+  "exclude": ["**/__mocks__/*", "**/__tests__/*"]
+}

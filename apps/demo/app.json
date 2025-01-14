@@ -2,6 +2,7 @@
   "expo": {
     "name": "MDX demo",
     "icon": "https://github.com/expo.png",
+    "newArchEnabled": true,
     "web": {
       "bundler": "metro"
     }
