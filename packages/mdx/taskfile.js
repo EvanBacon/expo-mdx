@@ -9,17 +9,25 @@ export async function typings(task) {
   });
 }
 
-export async function main(task, opts) {
+export async function server(task, opts) {
   await task
-    .source("src/**/*.+(js|ts|tsx)", {
+    .source("src/server/**/*.+(js|ts|tsx)", {
       ignore: ["**/__tests__/**", "**/__mocks__/**", "**/__typetests__/**"],
     })
     .swc("cli", { dev: opts.dev })
-    .target("build");
+    .target("build/server");
+}
+
+export async function react(task, opts) {
+  await task.source("./tsconfig-react.json").shell({
+    cmd: "tsc -p $glob --outDir build/react",
+    preferLocal: true,
+    glob: true,
+  });
 }
 
 export async function build(task, opts) {
-  await task.parallel(["main", "typings"], opts);
+  await task.parallel(["server", "react", "typings"], opts);
 }
 
 export default async function (task) {

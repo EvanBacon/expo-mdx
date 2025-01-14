@@ -2,7 +2,7 @@
   "name": "@bacons/mdx",
   "version": "0.4.4",
   "description": "Universal MDX renderer for React Native",
-  "main": "build/index",
+  "main": "build/react/index",
   "files": [
     "build",
     "metro-transformer.js",
