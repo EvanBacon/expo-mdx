@@ -1,4 +1,3 @@
-import mdx from "@mdx-js/mdx";
 import { Processor } from "unified";
 import { Parent } from "unist";
 import visit from "unist-util-visit";
@@ -52,56 +51,57 @@ export function createTransformer({
 
   remarkPlugins?: any[];
 } = {}) {
-  const compiler = mdx.createCompiler({ remarkPlugins }) as Processor;
-
-  // Append this final rule at the end of the compiler chain:
-  compiler.use(() => {
-    return (tree, _file) => {
-      if (isParent(tree)) {
-        // Pass components={html} to custom components:
-        visit(tree, "jsx", (node) => {
-          if (
-            !("value" in node) ||
-            !node.value ||
-            typeof node.value !== "string"
-          ) {
-            return;
-          }
-          if (node.value.match(/<([A-Z][\w.]+)/)) {
-            node.value = node.value.replace(
-              /<([A-Z][\w.]+)/,
-              `<$1 __components={html} `
-            );
-          }
-        });
-      }
-
-      if (isParent(tree)) {
-        const walkForImages = (node: any) => {
-          if (node.tagName === "img") {
-            if (matchLocalAsset(node.properties)) {
-              // Relative path should be turned into a require statement:
-              node.properties.src = `[[_Expo_MemberProperty:require("${node.properties.src}")]]`;
-              // delete node.properties.src;
-            }
-          }
-          if (isParent(node)) {
-            node.children.forEach(walkForImages);
-          }
-        };
-
-        tree.children.map(walkForImages);
-      }
-
-      visit(tree, "element", (node) => {
-        // Ensure we don't use react-dom elements
-        // @ts-expect-error: incorrect types
-        node.tagName = "html." + node.tagName;
-      });
-    };
-  });
-
   async function transformMdx(props: { filename: string; src: string }) {
+    const mdx = await import("@mdx-js/mdx");
+
+    const compiler = mdx.createCompiler({ remarkPlugins }) as Processor;
+
+    // Append this final rule at the end of the compiler chain:
+    compiler.use(() => {
+      return (tree, _file) => {
+        if (isParent(tree)) {
+          // Pass components={html} to custom components:
+          visit(tree, "jsx", (node) => {
+            if (
+              !("value" in node) ||
+              !node.value ||
+              typeof node.value !== "string"
+            ) {
+              return;
+            }
+            if (node.value.match(/<([A-Z][\w.]+)/)) {
+              node.value = node.value.replace(
+                /<([A-Z][\w.]+)/,
+                `<$1 __components={html} `
+              );
+            }
+          });
+        }
+
+        if (isParent(tree)) {
+          const walkForImages = (node: any) => {
+            if (node.tagName === "img") {
+              if (matchLocalAsset(node.properties)) {
+                // Relative path should be turned into a require statement:
+                node.properties.src = `[[_Expo_MemberProperty:require("${node.properties.src}")]]`;
+                // delete node.properties.src;
+              }
+            }
+            if (isParent(node)) {
+              node.children.forEach(walkForImages);
+            }
+          };
+
+          tree.children.map(walkForImages);
+        }
+
+        visit(tree, "element", (node) => {
+          // Ensure we don't use react-dom elements
+          // @ts-expect-error: incorrect types
+          node.tagName = "html." + node.tagName;
+        });
+      };
+    });
     if (!matchFile(props)) {
       return props;
     }

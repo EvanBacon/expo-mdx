@@ -11,12 +11,18 @@
     "metro.js",
     "default-metro-transformer.js"
   ],
+  "taskr": {
+    "requires": [
+      "./taskfile-swc.js"
+    ]
+  },
   "scripts": {
-    "build": "expo-module build",
+    "build": "taskr",
+    "prepare": "taskr release",
+    "typecheck": "expo-module typecheck",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "jest --watch",
-    "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
@@ -41,8 +47,15 @@
     "@expo/html-elements": "~0.11.0",
     "@mdx-js/mdx": "^1.6.22",
     "unist-util-visit": "^1.4.1"
+    
   },
   "devDependencies": {
+    "@swc/core": "~1.2.249",
+    "@taskr/shell": "1.1.0",
+    "@taskr/clear": "^1.1.0",
+    "@taskr/esnext": "^1.1.0",
+    "@taskr/watch": "^1.1.0",
+    "taskr": "^1.1.0",
     "@expo/babel-preset-cli": "~0.3.1",
     "jest-environment-node": "^26",
     "remark-frontmatter": "3.0.0",
