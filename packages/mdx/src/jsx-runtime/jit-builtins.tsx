@@ -1,3 +1,5 @@
+import type React from "react";
+
 import "react/jsx-runtime";
 import { createMissingView } from "./MissingDomView";
 /**

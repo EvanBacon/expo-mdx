@@ -60,6 +60,7 @@
     "jest-environment-node": "^26",
     "remark-frontmatter": "3.0.0",
     "remark-mdx-frontmatter": "1.1.1",
-    "remark-stringify": "9.0.1"
+    "remark-stringify": "9.0.1",
+    "@types/react": "^19.0.7"
   }
 }
