@@ -5,6 +5,7 @@
     "module": "commonjs",
     "outDir": "./build",
     "jsx": "preserve",
+    "declarationMap": false,
     "emitDeclarationOnly": true
   },
   "include": ["./src"],
