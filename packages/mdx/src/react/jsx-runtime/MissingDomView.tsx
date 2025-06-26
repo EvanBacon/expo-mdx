@@ -45,6 +45,8 @@ function ErrorBoundary({ error }) {
   ]);
 }
 
+const SUPPORTED_INTRINSICS: string[] = [];
+
 export function createMissingView(name: string) {
   const stackItem = (src) => {
     if (typeof src === "object" && src && "fileName" in src) {
@@ -72,12 +74,14 @@ export function createMissingView(name: string) {
     }
   ) {
     React.useEffect(() => {
-      const { $$source } = props;
-      console.error(
-        `Unsupported DOM <${name} /> at: ${stackItem(
-          $$source
-        )}\nThis will break in production.`
-      );
+      if (!SUPPORTED_INTRINSICS.includes(name)) {
+        const { $$source } = props;
+        console.error(
+          `Unsupported DOM <${name} /> at: ${stackItem(
+            $$source
+          )}\nThis will break in production.`
+        );
+      }
     }, []);
     const children = React.useMemo(() => {
       const children: any[] = [];
@@ -85,7 +89,7 @@ export function createMissingView(name: string) {
         if (child == null) {
           return;
         }
-        if (typeof child === "string") {
+        if (typeof child === "string" || typeof child === "number") {
           // Wrap children with Text to prevent cryptic React errors when we already have a useful warning about the missing DOM element.
           children.push(
             React.createElement(Text, { key: String(index) }, [child])
@@ -103,8 +107,10 @@ export function createMissingView(name: string) {
     );
   };
 
-  // Make the component stack show the name of the missing dom element.
-  View.displayName = `MISSING(${name})`;
+  if (!SUPPORTED_INTRINSICS.includes(name)) {
+    // Make the component stack show the name of the missing dom element.
+    View.displayName = `MISSING(${name})`;
+  }
 
   return View;
 }
