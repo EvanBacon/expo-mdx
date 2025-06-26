@@ -2,7 +2,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "target": "es2019",
-    "module": "commonjs",
+    "module": "es2015",
     "outDir": "./build/react",
     "jsx": "preserve",
     "emitDeclarationOnly": false

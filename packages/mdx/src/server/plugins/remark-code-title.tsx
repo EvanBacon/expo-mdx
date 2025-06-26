@@ -4,7 +4,7 @@ import visit from "unist-util-visit";
  * This simple plugin appends the code block meta to the node value.
  */
 export default function remarkLinkRewrite() {
-  return (tree, file) => {
+  return (tree: any, file: any) => {
     if (!file.cwd || !file.history || !file.history.length) {
       return;
     }

@@ -1,4 +1,4 @@
-import React, { ComponentType, forwardRef } from "react";
+import React, { ComponentType } from "react";
 import {
   PixelRatio,
   Platform,
@@ -8,7 +8,7 @@ import {
 } from "react-native";
 
 export function em(value: number): number | string {
-  if (Platform.OS === "web") return `${value}em`;
+  if (process.env.EXPO_OS === "web") return `${value}em`;
   return PixelRatio.getFontScale() * 16 * value;
 }
 
@@ -22,16 +22,19 @@ function createHeadingComponent(level: number): ComponentType<TextProps> {
       accessibilityRole: "header",
     },
   });
-  return forwardRef((props: TextProps, ref) => {
+  return function Heading(props: TextProps) {
     return (
       <Text
         {...nativeProps}
         {...props}
-        style={[styles[`h${level}`], props.style]}
-        ref={ref}
+        style={[
+          // @ts-expect-error
+          styles[`h${level}`],
+          props.style,
+        ]}
       />
     );
-  }) as ComponentType<TextProps>;
+  };
 }
 
 export const H1 = createHeadingComponent(1);

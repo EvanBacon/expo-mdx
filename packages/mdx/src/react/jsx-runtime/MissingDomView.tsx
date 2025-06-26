@@ -1,8 +1,8 @@
 import React, { type ComponentType } from "react";
 import type { ViewProps } from "react-native";
 
-const NativeView = (props) => React.createElement("RCTView", props);
-const Text = (props) => React.createElement("RCTText", props);
+const NativeView = (props: any) => React.createElement("RCTView", props);
+const Text = (props: any) => React.createElement("RCTText", props);
 
 class Try extends React.Component<
   React.PropsWithChildren<{
@@ -12,7 +12,7 @@ class Try extends React.Component<
 > {
   state = { error: undefined };
 
-  static getDerivedStateFromError(error) {
+  static getDerivedStateFromError(error: any) {
     return { error };
   }
 
@@ -26,7 +26,7 @@ class Try extends React.Component<
   }
 }
 
-function ErrorBoundary({ error }) {
+function ErrorBoundary({ error }: { error: Error }) {
   if (error.message) {
     // When a DOM component is rendered inside a node module that shipped without the jsx-runtime, we can only intercept the error from the renderer.
     const invalidComponentName = error.message.match(
@@ -48,7 +48,7 @@ function ErrorBoundary({ error }) {
 const SUPPORTED_INTRINSICS: string[] = [];
 
 export function createMissingView(name: string) {
-  const stackItem = (src) => {
+  const stackItem = (src: any) => {
     if (typeof src === "object" && src && "fileName" in src) {
       let trace = src.fileName;
       if ("lineNumber" in src) {

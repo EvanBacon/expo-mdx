@@ -1,3 +1,5 @@
+/// <reference types="expo/types" />
+
 export { MDXStyles, useMDXStyles } from "./MDXStyles";
 export { getDOMComponents } from "./getDOMComponents";
 export { getUniversalComponents } from "./getUniversalComponents";

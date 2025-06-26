@@ -9,12 +9,17 @@ export function useMDXComponents() {
   const components = useInternalMDXComponents();
   // Mix the context styles into the components
   const obj = Object.keys(components).reduce((acc, key) => {
-    acc[key] = (props) => {
+    // @ts-expect-error
+    acc[key] = (props: any) => {
+      // @ts-expect-error
       if (typeof components[key] === "function") {
+        // @ts-expect-error
         return components[key]({ ...props, style: styles[key] });
       }
+      // @ts-expect-error
       return React.createElement(components[key], {
         ...props,
+        // @ts-expect-error
         style: styles[key],
       });
     };

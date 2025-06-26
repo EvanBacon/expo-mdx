@@ -13,7 +13,7 @@ type Styles = Partial<
 export const MDXStylesContext = React.createContext<Styles>({});
 
 export function useMDXStyles() {
-  return React.useContext(MDXStylesContext);
+  return React.use(MDXStylesContext);
 }
 
 export function MDXStyles({ children, ...props }: { children?: any } & Styles) {
@@ -21,17 +21,22 @@ export function MDXStyles({ children, ...props }: { children?: any } & Styles) {
   const value = React.useMemo(
     () => ({
       ...Object.keys({ ...props, ...parent }).reduce((acc, key) => {
+        // @ts-expect-error
         const parentValue = parent[key];
+        // @ts-expect-error
         const childValue = props[key];
         if (typeof parentValue === "object" && typeof childValue === "object") {
+          // @ts-expect-error
           acc[key] = {
             ...parentValue,
             ...childValue,
           };
         } else {
           if (key in props) {
+            // @ts-expect-error
             acc[key] = childValue;
           } else if (key in parent) {
+            // @ts-expect-error
             acc[key] = parentValue;
           }
         }
@@ -40,9 +45,5 @@ export function MDXStyles({ children, ...props }: { children?: any } & Styles) {
     }),
     [parent, props]
   );
-  return (
-    <MDXStylesContext.Provider value={value}>
-      {children}
-    </MDXStylesContext.Provider>
-  );
+  return <MDXStylesContext value={value}>{children}</MDXStylesContext>;
 }

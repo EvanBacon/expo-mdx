@@ -1,6 +1,7 @@
+// @ts-expect-error: untyped bundler global
 import registry from "@react-native/assets-registry/registry";
 import React, { Children } from "react";
-import { PixelRatio } from "react-native";
+import { resolveAssetUrl } from "./resolveAssetUrl";
 
 export const OrderContext = React.createContext<{
   index: number;
@@ -10,8 +11,8 @@ export const OrderContext = React.createContext<{
   prevSibling: string;
 } | null>(null);
 
-function MDImage({ src, ...props }) {
-  const resolvedSrc = React.useMemo(() => resolveAssetUri(src), [src]);
+function MDImage({ src, ...props }: React.ComponentProps<"img">) {
+  const resolvedSrc = React.useMemo(() => resolveAssetUrl(src), [src]);
   return (
     <img
       width={resolvedSrc.width}
@@ -20,69 +21,6 @@ function MDImage({ src, ...props }) {
       src={resolvedSrc.uri}
     />
   );
-}
-
-const svgDataUriPattern = /^(data:image\/svg\+xml;utf8,)(.*)/;
-
-function resolveAssetUri(source): {
-  uri: string;
-  width?: number;
-  height?: number;
-} {
-  let uri: string | null = null;
-  let width: number | undefined;
-  let height: number | undefined;
-  if (typeof source === "number") {
-    // get the URI from the packager
-    let asset = registry.getAssetByID(source);
-    if (asset == null) {
-      throw new Error(
-        'Image: asset with ID "' +
-          source +
-          '" could not be found. Please check the image source or packager.'
-      );
-    }
-    let scale = asset.scales[0];
-    if (asset.scales.length > 1) {
-      const preferredScale = PixelRatio.get();
-      // Get the scale which is closest to the preferred scale
-      scale = asset.scales.reduce((prev, curr) =>
-        Math.abs(curr - preferredScale) < Math.abs(prev - preferredScale)
-          ? curr
-          : prev
-      );
-    }
-    const scaleSuffix = scale !== 1 ? "@" + scale + "x" : "";
-    uri = asset
-      ? asset.httpServerLocation +
-        "/" +
-        asset.name +
-        scaleSuffix +
-        "." +
-        asset.type
-      : "";
-
-    width = asset.width;
-    height = asset.height;
-  } else if (typeof source === "string") {
-    uri = source;
-  } else if (source && typeof source.uri === "string") {
-    // Expo SDK 52 and higher will return assets in ImageSource format.
-    return source;
-  }
-  if (uri) {
-    const match = uri.match(svgDataUriPattern);
-    // inline SVG markup may contain characters (e.g., #, ") that need to be escaped
-    if (match) {
-      const prefix = match[1];
-      const svg = match[2];
-      const encodedSvg = encodeURIComponent(svg);
-      return { uri: "" + prefix + encodedSvg };
-    }
-  } else {
-    throw new Error('Unknown image source "' + source + '" used in MDX.');
-  }
-  return { uri, width, height };
 }
 
 const HTML_KEYS = [
@@ -165,20 +103,21 @@ export function getDOMComponents(): Record<
   };
 }
 
-export function RootWrapper({ children }) {
+export function RootWrapper({ children }: { children?: React.ReactNode }) {
   const prevChildTypes = ["root"];
   const childrenCount = Children.count(children);
   return Children.map(children, (child, index) => {
-    if (typeof child === "string") {
+    if (!React.isValidElement(child) || typeof child === "string") {
       return child;
     }
     const prevSibling = prevChildTypes[prevChildTypes.length - 1];
-    const mdxType = child.props.mdxType || "element";
+    // @ts-expect-error
+    const mdxType = child?.props.mdxType || "element";
     const isFirstOfType = prevChildTypes[prevChildTypes.length - 1] !== mdxType;
     prevChildTypes.push(mdxType);
 
     return (
-      <OrderContext.Provider
+      <OrderContext
         value={{
           index,
           firstChild: index === 0,
@@ -188,16 +127,16 @@ export function RootWrapper({ children }) {
         }}
       >
         {child}
-      </OrderContext.Provider>
+      </OrderContext>
     );
   });
 }
 
 export function useOrder() {
-  return React.useContext(OrderContext);
+  return React.use(OrderContext);
 }
 
-export function stripExtras(Element, displayName?: string) {
+export function stripExtras(Element: any, displayName?: string) {
   function E({
     firstChild,
     lastChild,
@@ -206,7 +145,7 @@ export function stripExtras(Element, displayName?: string) {
     prevSibling,
     parentName,
     ...props
-  }) {
+  }: any) {
     return <Element {...props} />;
   }
 

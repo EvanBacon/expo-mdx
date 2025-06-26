@@ -1,3 +1,4 @@
+// @ts-expect-error
 import mdx from "@mdx-js/mdx";
 import { Processor } from "unified";
 import { Parent } from "unist";
@@ -5,7 +6,7 @@ import visit from "unist-util-visit";
 
 const debug = require("debug")("bacons:mdx:transform") as typeof console.log;
 
-const getTemplate = (rawMdxString) => {
+const getTemplate = (rawMdxString: string) => {
   const replacedShortcodes = rawMdxString.replace(
     /= makeShortcode\(/g,
     "= makeExpoMetroProvided("
@@ -121,7 +122,7 @@ export function createTransformer({
       );
     }
 
-    props.src = getTemplate(contents);
+    props.src = getTemplate(contents.toString());
 
     debug("Compiled MDX file:", props.filename, "\n", props.src);
 

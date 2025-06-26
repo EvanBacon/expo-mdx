@@ -22,7 +22,7 @@ export const MDXComponentsContext = React.createContext<Elements>(
 );
 
 export function useInternalMDXComponents() {
-  const context = React.useContext(MDXComponentsContext);
+  const context = React.use(MDXComponentsContext);
   if (!context) {
     return getUniversalComponents();
   }
@@ -42,15 +42,12 @@ export function MDXComponents({
   const value = React.useMemo(
     () => ({
       ...Object.keys({ ...allProps, ...parent }).reduce((acc, key) => {
+        // @ts-expect-error
         acc[key] = allProps[key] ?? parent[key];
         return acc;
       }, {} as Elements),
     }),
     [parent, allProps]
   );
-  return (
-    <MDXComponentsContext.Provider value={value}>
-      {children}
-    </MDXComponentsContext.Provider>
-  );
+  return <MDXComponentsContext value={value}>{children}</MDXComponentsContext>;
 }

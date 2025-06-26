@@ -77,7 +77,11 @@ export function getUniversalComponents(): Record<
   };
 }
 
-function Paragraph({ style, children }) {
+function Paragraph({
+  ref,
+  style,
+  children,
+}: React.ComponentProps<typeof Text>) {
   // NOTE(EvanBacon): Unclear why, but mdxjs is wrapping an image in a paragraph tag.
   // This can lead to nesting a div in a p on web, which is invalid.
   const image = React.Children.toArray(children).find((child) => {
@@ -88,23 +92,23 @@ function Paragraph({ style, children }) {
     return <>{children}</>;
   }
 
-  return <Text style={style} children={children} />;
+  return <Text ref={ref} style={style} children={children} />;
 }
 
-function Div(props) {
+function Div(props: React.ComponentProps<typeof View>) {
   return <View {...props} style={[{ flex: 1 }, props.style]} />;
 }
 
-function Img({ src, style }) {
+function Img({ src, style }: React.ComponentProps<typeof Image>) {
   const source = typeof src === "string" ? { uri: src } : src;
-  if (Platform.OS === "web" || !source.uri) {
+  if (process.env.EXPO_OS === "web" || !source?.uri) {
     return <Image source={source} style={style} />;
   }
 
   return <AutoImage style={style} source={source} />;
 }
 
-function wrapHeader(Element) {
+function wrapHeader(Element: any) {
   return function Header({
     firstChild,
     lastChild,
@@ -112,7 +116,7 @@ function wrapHeader(Element) {
     index,
     prevSibling,
     ...props
-  }) {
+  }: any) {
     const isFirst = index === 0;
 
     return (
