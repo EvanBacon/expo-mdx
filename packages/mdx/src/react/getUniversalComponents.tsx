@@ -92,7 +92,20 @@ function Paragraph({
     return <>{children}</>;
   }
 
-  return <Text ref={ref} style={style} children={children} />;
+  const nativeStyle = Platform.select<typeof style>({
+    web: [
+      {
+        // This is needed to avoid new lines in markdown wrapped paragraphs
+        // rendering as line breaks on web, because <Text> in react-native-web
+        // uses `white-space: pre-wrap` by default.
+        whiteSpace: "normal",
+      } as any,
+      style,
+    ],
+    default: style,
+  });
+
+  return <Text ref={ref} style={nativeStyle} children={children} />;
 }
 
 function Div(props: React.ComponentProps<typeof View>) {
