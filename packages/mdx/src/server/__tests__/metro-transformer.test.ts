@@ -70,6 +70,62 @@ describe(transform, () => {
     `);
   });
 
+  it(`should transform MDX with sibling and nested custom components`, async () => {
+    const result = await transform({
+      filename: "test.mdx",
+      //   src: `- 123`,
+      src: `
+# Hello World
+
+import Foo from './foo'
+
+<Foo />
+<Foo />
+
+<Foo>
+  <Foo />
+</Foo>`,
+    });
+
+    expect(result.src).toMatchInlineSnapshot(`
+      "\\"use client\\";
+      import { useMDXComponents } from \\"@bacons/mdx\\";
+
+      const makeExpoMetroProvided = name => function MDXExpoMetroComponent({ __components, ...props}) {
+        if (__components[name] == null) {
+          console.warn(\\"Component \\" + name + \\" was not imported, exported, or provided by MDXProvider as global scope\\")
+          return <__components.span {...props}/>
+        }
+        return __components[name](props);
+      };
+      import Foo from './foo'
+
+
+      const layoutProps = {
+        
+      };
+      const MDXLayout = \\"wrapper\\"
+      export default function MDXContent({
+        components,
+        ...props
+      }) {
+        const html = { ...useMDXComponents(), ...(components ?? {}) };
+        const MDXLayout = html.Wrapper;
+        return <MDXLayout {...layoutProps} {...props} components={components} mdxType=\\"MDXLayout\\">
+          <html.h1>{\`Hello World\`}</html.h1>
+
+          <Foo __components={html} mdxType=\\"Foo\\" />
+          <Foo __components={html} mdxType=\\"Foo\\" />
+          <Foo __components={html} mdxType=\\"Foo\\">
+        <Foo __components={html} mdxType=\\"Foo\\" />
+          </Foo>
+          </MDXLayout>;
+      }
+      ;
+      MDXContent.isMDXComponent = true;"
+    `);
+  });
+
   it(`should transform MDX with custom components`, async () => {
     const result = await transform({
       filename: "test.mdx",

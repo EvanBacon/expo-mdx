@@ -69,8 +69,8 @@ export function createTransformer({
             return;
           }
           if (node.value.match(/<([A-Z][\w.]+)/)) {
-            node.value = node.value.replace(
-              /<([A-Z][\w.]+)/,
+            node.value = node.value.replaceAll(
+              /<([A-Z][\w.]+)/g,
               `<$1 __components={html} `
             );
           }
