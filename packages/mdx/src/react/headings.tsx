@@ -16,7 +16,7 @@ function createHeadingComponent(level: number): ComponentType<TextProps> {
   const nativeProps: any = Platform.select({
     web: {
       "aria-level": level,
-      role: "header",
+      role: "heading",
     },
     default: {
       accessibilityRole: "header",
