@@ -4,6 +4,7 @@ import {
   type RehypeExpoLocalImagesOptions,
 } from "./plugins/rehype-expo-local-images";
 import { rehypePrefixTagNames } from "./plugins/rehype-prefix-tag-names";
+import { rehypeStripTableWhitespace } from "./plugins/rehype-strip-table-whitespace";
 
 const debug = require("debug")("bacons:mdx:transform") as typeof console.log;
 
@@ -75,6 +76,7 @@ export function createTransformer({
         remarkPlugins,
         rehypePlugins: [
           [rehypeExpoLocalImages, { matchLocalAsset }],
+          rehypeStripTableWhitespace,
           [rehypePrefixTagNames, { prefix: "html." }],
         ],
         recmaPlugins: [[recmaExpoRuntime, { visit: estreeVisit }]],
