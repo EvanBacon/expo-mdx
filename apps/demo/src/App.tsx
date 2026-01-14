@@ -1,8 +1,8 @@
 import { MDXComponents, getDOMComponents, MDXStyles } from "@bacons/mdx";
 import { View } from "@bacons/react-views";
 import { Try } from "expo-router/build/views/Try";
-import { Platform, SafeAreaView, ScrollView, Text } from "react-native";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { Platform, ScrollView, Text } from "react-native";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 import Demo from "./tester.mdx";
 

@@ -1490,10 +1490,10 @@
     resolve-from "^5.0.0"
     semver "^7.6.0"
 
-"@expo/html-elements@~0.11.0":
-  version "0.11.2"
-  resolved "https://registry.yarnpkg.com/@expo/html-elements/-/html-elements-0.11.2.tgz#e12399b11b87ed81cb800420b0cae90f3432304f"
-  integrity sha512-OC98eZ4mMzpFQq/KF9t+CGC4Vcg4RnoOxWAzSmNVd3VZ2dFFi64QCoHlT719wDmuccemn1VPXu1/rFvOGmJgOg==
+"@expo/html-elements@^0.13.8":
+  version "0.13.8"
+  resolved "https://registry.yarnpkg.com/@expo/html-elements/-/html-elements-0.13.8.tgz#c53c0cd009b2a5568192c70f3a2ca77092b36cc9"
+  integrity sha512-dY8cbf9dkigI7YqIcz5k1Y2GpVG++WKPLp51q5xAGHYNyW7RyuGUPKjgiwK4Th0GBcQFBVCZuu/XZerPqMFA7g==
 
 "@expo/image-utils@^0.8.8":
   version "0.8.8"
