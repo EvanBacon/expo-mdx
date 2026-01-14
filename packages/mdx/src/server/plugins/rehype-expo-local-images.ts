@@ -1,5 +1,5 @@
-import type { Element, Properties } from "hast";
-import visit from "unist-util-visit";
+import type { Element, Properties, Root } from "hast";
+import { visit } from "unist-util-visit";
 
 export interface RehypeExpoLocalImagesOptions {
   /**
@@ -16,9 +16,10 @@ export interface RehypeExpoLocalImagesOptions {
 export function rehypeExpoLocalImages({
   matchLocalAsset = (props) => !!props.src.match(/^[.@]/),
 }: RehypeExpoLocalImagesOptions = {}) {
-  return (tree) => {
-    visit<Element>(tree, { type: "element", tagName: "img" }, (node) => {
+  return (tree: Root) => {
+    visit(tree, "element", (node: Element) => {
       if (
+        node.tagName === "img" &&
         imageHasStringSource(node.properties) &&
         matchLocalAsset(node.properties) &&
         !node.properties.src.startsWith("require(")

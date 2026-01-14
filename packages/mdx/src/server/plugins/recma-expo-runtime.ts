@@ -1,9 +1,12 @@
 import type {
-  CallExpression,
   FunctionDeclaration,
   Program,
   VariableDeclaration,
-} from "estree-jsx";
+  Node,
+  ObjectPattern,
+  Property,
+  ObjectExpression,
+} from "estree";
 
 interface RecmaExpoRuntimeOptions {
   componentLibrary?: string;
@@ -47,20 +50,22 @@ export function recmaExpoRuntime({
           },
         },
       ],
-    });
+      attributes: [],
+    } as any);
 
     // Modify the `_createMdxContent` -> `const {Bacon, Foobar, html} = props.components || ({})` to:
     // `const components = { ...useMDXComponents(), ...props.components };` + `const {Bacon, Foobar, html} = components`;
     const createMdxContent = tree.body.find(
-      (node) =>
+      (node): node is FunctionDeclaration =>
         node.type === "FunctionDeclaration" &&
-        node.id.type === "Identifier" &&
+        node.id?.type === "Identifier" &&
         node.id.name === "_createMdxContent"
-    ) as FunctionDeclaration;
+    );
     if (createMdxContent) {
       const componentDestructure = createMdxContent.body.body.find(
-        (node) => node.type === "VariableDeclaration"
-      ) as VariableDeclaration; // todo check for `const {html}`
+        (node): node is VariableDeclaration =>
+          node.type === "VariableDeclaration"
+      ); // todo check for `const {html}`
 
       if (componentDestructure) {
         // insert `const components = { ...useMDXComponents(), ...props.components };`
@@ -118,9 +123,10 @@ export function recmaExpoRuntime({
           name: "components",
         };
         // modify to `const {Bacon, Foobar, ...html} = components`
-        if (componentDestructure.declarations[0].id.type === "ObjectPattern") {
-          componentDestructure.declarations[0].id.properties =
-            componentDestructure.declarations[0].id.properties.map((node) => {
+        const declarationId = componentDestructure.declarations[0].id;
+        if (declarationId.type === "ObjectPattern") {
+          (declarationId as ObjectPattern).properties = declarationId.properties.map(
+            (node) => {
               if (
                 node.type === "Property" &&
                 node.key.type === "Identifier" &&
@@ -136,28 +142,32 @@ export function recmaExpoRuntime({
               }
 
               return node;
-            });
+            }
+          );
         }
 
-        visit!(tree, (node) => {
+        visit!(tree, (node: Node) => {
           // Ensure all components have the `components={html}` property
           if (
             node.type === "CallExpression" &&
             node.callee.type === "Identifier" &&
             node.callee.name === "_jsx"
           ) {
-            // JSX is endered as `_jsx(<component>, <props>)`
+            // JSX is rendered as `_jsx(<component>, <props>)`
             // check the 2nd argument if it has `components: html`
+            const secondArg = node.arguments[1];
             if (
-              node.arguments[1].type === "ObjectExpression" &&
-              !node.arguments[1].properties.some(
+              secondArg &&
+              secondArg.type === "ObjectExpression" &&
+              !(secondArg as ObjectExpression).properties.some(
                 (prop) =>
                   prop.type === "Property" &&
-                  prop.key.type === "Identifier" &&
-                  prop.key.name === "components"
+                  (prop as Property).key.type === "Identifier" &&
+                  ((prop as Property).key as { name: string }).name ===
+                    "components"
               )
             ) {
-              node.arguments[1].properties.push({
+              (secondArg as ObjectExpression).properties.push({
                 type: "Property",
                 key: {
                   type: "Identifier",
@@ -181,6 +191,7 @@ export function recmaExpoRuntime({
 }
 
 export async function createPlugin() {
-  const visit = (await import("estree-util-visit")).visit;
-  return (...args) => recmaExpoRuntime({ ...args, visit });
+  const { visit } = await import("estree-util-visit");
+  return (...args: Parameters<typeof recmaExpoRuntime>) =>
+    recmaExpoRuntime({ ...args[0], visit });
 }

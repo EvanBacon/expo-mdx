@@ -11,19 +11,41 @@ const debug = require("debug")("bacons:mdx:transform") as typeof console.log;
 let _compiler: ReturnType<typeof import("@mdx-js/mdx").createProcessor> | null =
   null;
 
+/** Key to identify compiler configuration (for testing) */
+let _compilerKey: string | null = null;
+
+/**
+ * Reset the singleton compiler (useful for tests).
+ */
+export function resetCompiler() {
+  _compiler = null;
+  _compilerKey = null;
+}
+
 /**
  * Create and return the singleton MDX compiler instance.
  * This is done asynchronously to use ESM code inside CJS contexts.
  */
 export async function createSingletonCompiler(
-  options: import("@mdx-js/mdx").ProcessorOptions
+  options: import("@mdx-js/mdx").ProcessorOptions,
+  key?: string
 ) {
+  // Reset compiler if key changed (different configuration)
+  if (key && _compilerKey !== key) {
+    _compiler = null;
+    _compilerKey = key;
+  }
+
   if (!_compiler) {
     _compiler = (await import("@mdx-js/mdx")).createProcessor(options);
+    if (key) _compilerKey = key;
   }
 
   return _compiler;
 }
+
+/** Counter for generating unique compiler keys */
+let _transformerCounter = 0;
 
 export function createTransformer({
   matchLocalAsset,
@@ -39,20 +61,26 @@ export function createTransformer({
 
   remarkPlugins?: any[];
 } = {}) {
+  // Generate a unique key for this transformer configuration
+  const compilerKey = `transformer-${++_transformerCounter}`;
+
   async function transformMdx(props: { filename: string; src: string }) {
     if (!matchFile(props)) {
       return props;
     }
 
     const { visit: estreeVisit } = await import("estree-util-visit");
-    const compiler = await createSingletonCompiler({
-      remarkPlugins,
-      rehypePlugins: [
-        [rehypeExpoLocalImages, { matchLocalAsset }],
-        [rehypePrefixTagNames, { prefix: "html." }],
-      ],
-      recmaPlugins: [[recmaExpoRuntime, { visit: estreeVisit }]],
-    });
+    const compiler = await createSingletonCompiler(
+      {
+        remarkPlugins,
+        rehypePlugins: [
+          [rehypeExpoLocalImages, { matchLocalAsset }],
+          [rehypePrefixTagNames, { prefix: "html." }],
+        ],
+        recmaPlugins: [[recmaExpoRuntime, { visit: estreeVisit }]],
+      },
+      compilerKey
+    );
 
     let contents: string;
 
@@ -63,10 +91,11 @@ export function createTransformer({
       });
 
       contents = value.toString();
-    } catch (error) {
-      throw new Error(`Failed to process MDX for ${props.filename}`, {
-        cause: error,
-      });
+    } catch (error: any) {
+      const errMsg = `Failed to process MDX for ${props.filename}: ${error?.message || error}`;
+      const newError = new Error(errMsg);
+      (newError as any).cause = error;
+      throw newError;
     }
 
     // if (typeof contents === "string") {
