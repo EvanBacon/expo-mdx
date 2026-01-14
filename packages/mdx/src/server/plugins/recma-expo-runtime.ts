@@ -147,6 +147,31 @@ export function recmaExpoRuntime({
         }
 
         visit!(tree, (node: Node) => {
+          // Convert string literals like 'require("./foo.png")' to actual require() calls
+          // This handles local image sources set by rehype-expo-local-images
+          // We look for Property nodes with Literal values matching the pattern
+          if (
+            node.type === "Property" &&
+            (node as Property).value.type === "Literal"
+          ) {
+            const literal = (node as Property).value as { type: "Literal"; value: unknown };
+            if (
+              typeof literal.value === "string" &&
+              literal.value.startsWith("require(")
+            ) {
+              const match = literal.value.match(/^require\(["'](.+)["']\)$/);
+              if (match) {
+                // Replace the literal value with a CallExpression
+                (node as Property).value = {
+                  type: "CallExpression",
+                  callee: { type: "Identifier", name: "require" },
+                  arguments: [{ type: "Literal", value: match[1] }],
+                  optional: false,
+                } as any;
+              }
+            }
+          }
+
           // Ensure all components have the `components={html}` property
           if (
             node.type === "CallExpression" &&
