@@ -72,7 +72,7 @@ export function getUniversalComponents(): Record<
 
     hr: stripExtras(htmlElements.HR),
     div: Div,
-    span: Text,
+    span: stripExtras(Text),
     img: Img,
   };
 }
@@ -81,7 +81,8 @@ function Paragraph({
   ref,
   style,
   children,
-}: React.ComponentProps<typeof Text>) {
+  components,
+}: React.ComponentProps<typeof Text> & { components?: any }) {
   // NOTE(EvanBacon): Unclear why, but mdxjs is wrapping an image in a paragraph tag.
   // This can lead to nesting a div in a p on web, which is invalid.
   const image = React.Children.toArray(children).find((child) => {
@@ -95,11 +96,11 @@ function Paragraph({
   return <Text ref={ref} style={style} children={children} />;
 }
 
-function Div(props: React.ComponentProps<typeof View>) {
+function Div({ components, ...props }: React.ComponentProps<typeof View> & { components?: any }) {
   return <View {...props} style={[{ flex: 1 }, props.style]} />;
 }
 
-function Img({ src, style }: React.ComponentProps<typeof Image>) {
+function Img({ src, style, components }: React.ComponentProps<typeof Image> & { components?: any }) {
   const source = typeof src === "string" ? { uri: src } : src;
   if (process.env.EXPO_OS === "web" || !source?.uri) {
     return <Image source={source} style={style} />;
@@ -115,6 +116,7 @@ function wrapHeader(Element: any) {
     firstOfType,
     index,
     prevSibling,
+    components,
     ...props
   }: any) {
     const isFirst = index === 0;
