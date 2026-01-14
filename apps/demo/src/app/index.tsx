@@ -1,33 +1,32 @@
-import { MDXComponents, getDOMComponents, MDXStyles } from "@bacons/mdx";
+import { MDXComponents, MDXStyles } from "@bacons/mdx";
 import { Link } from "expo-router";
-import { Try } from "expo-router/build/views/Try";
-import { Platform, ScrollView, Text, Pressable, View } from "react-native";
+import { Platform, ScrollView, Text, View } from "react-native";
 
 import Demo from "../tester.mdx";
 
-const tests = require.context("../supported", true, /\.mdx$/);
-
 export default function Index() {
   return (
-    <ScrollView contentContainerStyle={{ padding: 24 }}>
-      <Link href="/remote" asChild>
-        <Pressable
-          style={{
-            backgroundColor: "#007AFF",
-            padding: 16,
-            borderRadius: 8,
-            marginBottom: 24,
-          }}
-        >
-          <Text
-            style={{ color: "white", fontWeight: "bold", textAlign: "center" }}
-          >
-            Test Remote MDX
-          </Text>
-        </Pressable>
+    <ScrollView contentContainerStyle={{ padding: 24, gap: 8 }}>
+      <Link
+        href="/dom"
+        style={{
+          padding: 16,
+          borderRadius: 8,
+          backgroundColor: "#eee",
+        }}
+      >
+        DOM Components
       </Link>
-
-      <RenderTests />
+      <Link
+        href="/remote"
+        style={{
+          padding: 16,
+          borderRadius: 8,
+          backgroundColor: "#eee",
+        }}
+      >
+        Remote MDX
+      </Link>
 
       <GitHubStyle>
         <MediumStyle>
@@ -35,34 +34,6 @@ export default function Index() {
         </MediumStyle>
       </GitHubStyle>
     </ScrollView>
-  );
-}
-
-function RenderTests() {
-  return (
-    <View style={{ gap: 12 }}>
-      {tests.keys().map((key) => {
-        const Test = tests(key).default;
-        return (
-          <View key={key} style={{ borderWidth: 1, padding: 8, gap: 8 }}>
-            <Text style={{ fontSize: 20, fontWeight: "bold" }}>{key}</Text>
-            <View style={{ borderWidth: 1 }}>
-              <Try
-                catch={(props) => {
-                  return (
-                    <Text style={{ color: "red" }}>
-                      Failed to render test "{key}": {props.error.message}
-                    </Text>
-                  );
-                }}
-              >
-                <Test components={getDOMComponents()} />
-              </Try>
-            </View>
-          </View>
-        );
-      })}
-    </View>
   );
 }
 

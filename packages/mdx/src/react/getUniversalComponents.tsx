@@ -6,6 +6,7 @@ import { Platform } from "react-native";
 import { AutoImage } from "./AutoImage";
 import * as headings from "./headings";
 import * as List from "./list/List";
+import * as Table from "./table/Table";
 
 import {
   ComponentKeys,
@@ -34,6 +35,16 @@ export function getUniversalComponents(): Record<
         li: List.LI,
         // TODO
         ol: List.UL,
+
+        // Table components
+        table: Table.Table,
+        thead: Table.THead,
+        tbody: Table.TBody,
+        tfoot: Table.TFoot,
+        tr: Table.TR,
+        th: Table.TH,
+        td: Table.TD,
+        caption: Table.Caption,
       },
     }),
 
