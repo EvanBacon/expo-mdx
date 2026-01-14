@@ -142,6 +142,22 @@ Key dependencies in the MDX pipeline:
 - `unist-util-visit` - AST traversal for rehype plugins
 - `estree-util-visit` - AST traversal for recma plugins
 
+## Publishing
+
+The package auto-publishes to npm when changes are merged to main. The workflow (`.github/workflows/publish.yml`):
+
+1. Triggers on push to `main` when `packages/mdx/**` changes
+2. Builds the package
+3. Checks if the current version is already published
+4. Publishes only if the version is new
+
+**To release a new version:**
+1. Update version in `packages/mdx/package.json`
+2. Merge to main
+3. GitHub Actions will automatically publish
+
+**Required setup:** Add `NPM_TOKEN` secret to GitHub repository settings (Settings → Secrets → Actions).
+
 ## Known Issues
 
 - Jest tests are mostly skipped due to ESM compatibility
