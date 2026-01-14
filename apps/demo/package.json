@@ -8,6 +8,7 @@
   "dependencies": {
     "@bacons/mdx": "*",
     "expo": "^54.0.31",
+    "expo-glass-effect": "^0.1.8",
     "expo-linking": "~8.0.11",
     "expo-router": "~6.0.21",
     "expo-splash-screen": "~31.0.13",

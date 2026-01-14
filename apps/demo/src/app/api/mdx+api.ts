@@ -3,6 +3,8 @@ import { compileMDX } from "@bacons/mdx/server";
 const sampleMDX = `
 # Remote MDX Example
 
+> Updated [timestamp]
+
 This content was **compiled on the server** and rendered on the client.
 
 ## Features
@@ -14,8 +16,6 @@ This content was **compiled on the server** and rendered on the client.
 ## Custom Components
 
 Here's a custom component: <Highlight>This text is highlighted!</Highlight>
-
-And another one: <Badge type="success">Success</Badge>
 
 ## Code Example
 
@@ -37,7 +37,9 @@ That's it! Remote MDX is working.
 
 export async function GET(request: Request) {
   try {
-    const compiled = await compileMDX(sampleMDX);
+    const compiled = await compileMDX(
+      sampleMDX.replace("[timestamp]", new Date().toISOString())
+    );
     return Response.json(compiled);
   } catch (error: any) {
     return Response.json(

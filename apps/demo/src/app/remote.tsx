@@ -1,4 +1,5 @@
 import { RemoteMDX, useMDXFetch, MDXComponents, MDXStyles } from "@bacons/mdx";
+import { useState, useCallback } from "react";
 import {
   Platform,
   ScrollView,
@@ -6,13 +7,31 @@ import {
   View,
   ActivityIndicator,
   Pressable,
+  RefreshControl,
 } from "react-native";
 
 export default function RemoteMDXPage() {
   const { content, loading, error, refetch } = useMDXFetch("/api/mdx");
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
+  }, [refetch]);
 
   return (
-    <ScrollView contentContainerStyle={{ padding: 24 }}>
+    <ScrollView
+      contentContainerStyle={{ padding: 24 }}
+      contentInsetAdjustmentBehavior="automatic"
+      refreshControl={
+        <RefreshControl
+          tintColor={"black"}
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+        />
+      }
+    >
       <Text style={{ fontSize: 12, color: "#666", marginBottom: 16 }}>
         This content is fetched from /api/mdx and rendered using RemoteMDX
       </Text>
@@ -103,6 +122,7 @@ export default function RemoteMDXPage() {
                     paddingHorizontal: 8,
                     paddingVertical: 4,
                     borderRadius: 12,
+
                     alignSelf: "flex-start",
                   }}
                 >
