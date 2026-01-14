@@ -19,12 +19,11 @@
   },
   "scripts": {
     "build": "taskr",
-    "prepare": "taskr release",
     "typecheck": "expo-module typecheck",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "jest --watch",
-    "prepublishOnly": "expo-module prepublishOnly",
+    "prepublishOnly": "expo-module prepublishOnly && taskr release",
     "expo-module": "expo-module"
   },
   "repository": {
@@ -51,20 +50,22 @@
     "estree-util-visit": "^2.0.0"
   },
   "devDependencies": {
+    "@expo/babel-preset-cli": "~0.3.1",
+    "@expo/metro-config": "*",
     "@swc/core": "~1.2.249",
-    "@taskr/shell": "1.1.0",
     "@taskr/clear": "^1.1.0",
     "@taskr/esnext": "^1.1.0",
+    "@taskr/shell": "1.1.0",
     "@taskr/watch": "^1.1.0",
     "@types/estree": "^1.0.6",
     "@types/hast": "^3.0.4",
     "@types/mdast": "^4.0.4",
     "@types/react": "^19.0.7",
-    "taskr": "^1.1.0",
-    "@expo/babel-preset-cli": "~0.3.1",
+    "getenv": "^1.0.0",
     "jest-environment-node": "^26",
     "remark-frontmatter": "^5.0.0",
     "remark-mdx-frontmatter": "^5.0.0",
-    "remark-stringify": "^11.0.0"
+    "remark-stringify": "^11.0.0",
+    "taskr": "^1.1.0"
   }
 }

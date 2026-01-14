@@ -7,7 +7,13 @@
     "outDir": "./build",
     "jsx": "preserve",
     "declarationMap": false,
-    "emitDeclarationOnly": true
+    "emitDeclarationOnly": true,
+    "skipLibCheck": true,
+    "types": ["jest", "node"],
+    "typeRoots": [
+      "./node_modules/@types",
+      "../../node_modules/@types"
+    ]
   },
   "include": ["./src"],
   "exclude": ["**/__mocks__/*", "**/__tests__/*"]

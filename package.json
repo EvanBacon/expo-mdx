@@ -3,25 +3,21 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "lerna run build --parallel -- --watch",
-    "prepare": "lerna run prepare --parallel"
+    "build": "bun run --filter '@bacons/mdx' build",
+    "test": "bun run --filter '@bacons/mdx' test"
   },
   "workspaces": [
     "apps/*",
     "packages/*"
   ],
-  "resolutions": {
-    "expo": "^54",
-    "fs-extra": "^9.1.0"
-  },
   "devDependencies": {
+    "@types/jest": "^26",
+    "@types/node": "^22",
     "eslint": "^8.10.0",
-    "lerna": "3.4.1",
+    "expo-module-scripts": "^4.1.7",
+    "jest": "^26.6.3",
     "prettier": "^2.2.1",
     "ts-node": "^10.0.0",
-  "typescript": "^5.8.3",
-    "expo-module-scripts": "^4.1.7",
-    "@types/jest": "^26",
-    "jest": "^26.6.3"
+    "typescript": "^5.8.3"
   }
 }

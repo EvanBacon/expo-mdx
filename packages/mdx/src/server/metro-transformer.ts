@@ -30,7 +30,7 @@ export function resetCompiler() {
 export async function createSingletonCompiler(
   options: import("@mdx-js/mdx").ProcessorOptions,
   key?: string
-) {
+): Promise<NonNullable<typeof _compiler>> {
   // Reset compiler if key changed (different configuration)
   if (key && _compilerKey !== key) {
     _compiler = null;

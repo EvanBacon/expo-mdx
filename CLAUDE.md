@@ -21,30 +21,30 @@ This is a universal MDX implementation for Expo (React & React Native). It trans
 
 ```bash
 # From repo root
-yarn                       # Install dependencies
-yarn start                 # Build packages in watch mode
+bun install                # Install dependencies
+bun run build              # Build the @bacons/mdx package
 
 # From packages/mdx
-yarn build                 # Build the package (uses taskr)
-yarn test                  # Run tests in watch mode
-yarn typecheck             # TypeScript type checking
+bun run build              # Build the package (uses taskr)
+bun run test               # Run tests in watch mode
+bun run typecheck          # TypeScript type checking
 
 # From apps/demo
-yarn start                 # Start Expo dev server
-yarn ios                   # Run on iOS
-yarn android               # Run on Android
+bun start                  # Start Expo dev server
+bun run ios                # Run on iOS
+bun run android            # Run on Android
 ```
 
 ## Build System
 
 The package uses **taskr** for builds (not standard npm scripts):
 
-- `taskfile.js` - Main build configuration
+- `taskfile.js` - Main build configuration (ESM)
 - `taskfile-swc.js` - SWC transpilation for server code
 - Source in `src/` compiles to `build/`
 - Server code (plugins) uses SWC, React code uses TypeScript compiler
 
-**Important:** After editing source files in `src/`, run `yarn build` from `packages/mdx`. The demo app uses the built files, not source directly.
+**Important:** After editing source files in `src/`, run `bun run build` from `packages/mdx`. The demo app uses the built files, not source directly.
 
 ## Architecture
 
@@ -93,7 +93,7 @@ export function rehypeYourPlugin(options = {}) {
 ```
 
 2. Import and add to `metro-transformer.ts` rehypePlugins array
-3. Run `yarn build`
+3. Run `bun run build`
 
 ### Adding a New Remark Plugin
 
@@ -109,7 +109,7 @@ Tests are in `src/server/__tests__/`. Note: Many tests are skipped due to Jest E
 
 ```bash
 cd apps/demo
-yarn start --clear  # Clear Metro cache after changes
+bun start --clear  # Clear Metro cache after changes
 ```
 
 ## Key Patterns
@@ -130,7 +130,7 @@ Local images (`./image.png`, `@/assets/image.png`) are:
 
 Enable debug output:
 ```bash
-DEBUG=bacons:mdx:transform yarn start
+DEBUG=bacons:mdx:transform bun start
 ```
 
 To inspect compiled MDX output, check Metro bundler output or add `console.log(contents)` in `metro-transformer.ts` after compilation.
