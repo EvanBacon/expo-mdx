@@ -1,8 +1,8 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "target": "es2019",
-    "module": "es2015",
+    "target": "esnext",
+    "module": "esnext",
     "outDir": "./build/react",
     "jsx": "preserve",
     "emitDeclarationOnly": false
