@@ -1,15 +1,12 @@
 {
   "name": "@bacons/mdx-demo-app",
-  "main": "./index.js",
+  "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
-    "start": "expo start",
-    "ios": "expo run:ios",
-    "android": "expo run:android"
+    "start": "expo start"
   },
   "dependencies": {
     "@bacons/mdx": "*",
-    "@expo/metro-runtime": "~6.1.2",
     "expo": "^54.0.31",
     "expo-linking": "~8.0.11",
     "expo-router": "~6.0.21",
@@ -23,8 +20,13 @@
     "react-native-web": "^0.21.0"
   },
   "devDependencies": {
+    "@expo/metro-config": "^54.0.13",
+    "@types/react": "~19.1.10",
+    "babel-preset-expo": "~54.0.9",
+    "remark-frontmatter": "^5.0.0",
     "remark-gfm": "^4.0.0",
-    "remark-math": "^6.0.0"
+    "remark-math": "^6.0.0",
+    "remark-mdx-frontmatter": "^5.0.0"
   },
   "private": true
 }

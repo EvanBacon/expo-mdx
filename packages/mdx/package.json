@@ -1,9 +1,30 @@
 {
   "name": "@bacons/mdx",
-  "version": "0.5.5",
-  "description": "Universal MDX renderer for React Native",
+  "version": "1.0.0",
+  "description": "Universal MDX renderer for Expo Router",
   "main": "build/react/index",
   "types": "build/react/index",
+  "exports": {
+    ".": {
+      "types": "./build/react/index.d.ts",
+      "default": "./build/react/index.jsx"
+    },
+    "./server": {
+      "types": "./build/server/index.d.ts",
+      "default": "./build/server/index.js"
+    },
+    "./metro-transformer": {
+      "types": "./metro-transformer.d.ts",
+      "default": "./metro-transformer.js"
+    },
+    "./metro": {
+      "types": "./build/server/metro.d.ts",
+      "default": "./metro.js"
+    },
+    "./jsx": "./jsx/index.js",
+    "./jsx/jsx-runtime": "./jsx/jsx-runtime.js",
+    "./jsx/jsx-dev-runtime": "./jsx/jsx-dev-runtime.js"
+  },
   "files": [
     "build",
     "metro-transformer.js",
@@ -45,6 +66,7 @@
     "@bacons/react-views": "^1.1.3",
     "@expo/html-elements": "^0.13.8",
     "@mdx-js/mdx": "^3.1.0",
+    "debug": "^4.3.4",
     "unist-util-visit": "^5.0.0",
     "estree-util-visit": "^2.0.0"
   },

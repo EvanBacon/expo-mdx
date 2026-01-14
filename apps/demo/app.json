@@ -1,6 +1,9 @@
 {
   "expo": {
     "name": "MDX demo",
-    "newArchEnabled": true
+    "newArchEnabled": true,
+    "web": {
+      "output": "server"
+    }
   }
 }

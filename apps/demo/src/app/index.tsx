@@ -1,27 +1,40 @@
 import { MDXComponents, getDOMComponents, MDXStyles } from "@bacons/mdx";
-import { View } from "@bacons/react-views";
+import { Link } from "expo-router";
 import { Try } from "expo-router/build/views/Try";
-import { Platform, ScrollView, Text } from "react-native";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { Platform, ScrollView, Text, Pressable, View } from "react-native";
 
-import Demo from "./tester.mdx";
+import Demo from "../tester.mdx";
 
-const tests = require.context("./supported", true, /\.mdx$/);
+const tests = require.context("../supported", true, /\.mdx$/);
 
-export default function App() {
+export default function Index() {
   return (
-    <SafeAreaProvider style={{ backgroundColor: "white" }}>
-      <SafeAreaView style={{ flex: 1 }}>
-        <ScrollView contentContainerStyle={{ padding: 24 }}>
-          <RenderTests />
-          <GitHubStyle>
-            <MediumStyle>
-              <Demo />
-            </MediumStyle>
-          </GitHubStyle>
-        </ScrollView>
-      </SafeAreaView>
-    </SafeAreaProvider>
+    <ScrollView contentContainerStyle={{ padding: 24 }}>
+      <Link href="/remote" asChild>
+        <Pressable
+          style={{
+            backgroundColor: "#007AFF",
+            padding: 16,
+            borderRadius: 8,
+            marginBottom: 24,
+          }}
+        >
+          <Text
+            style={{ color: "white", fontWeight: "bold", textAlign: "center" }}
+          >
+            Test Remote MDX
+          </Text>
+        </Pressable>
+      </Link>
+
+      <RenderTests />
+
+      <GitHubStyle>
+        <MediumStyle>
+          <Demo />
+        </MediumStyle>
+      </GitHubStyle>
+    </ScrollView>
   );
 }
 
@@ -53,7 +66,7 @@ function RenderTests() {
   );
 }
 
-function GitHubStyle({ children }) {
+function GitHubStyle({ children }: { children: React.ReactNode }) {
   return (
     <MDXStyles
       th={{
@@ -69,28 +82,24 @@ function GitHubStyle({ children }) {
   );
 }
 
-function MediumStyle({ children }) {
+function MediumStyle({ children }: { children: React.ReactNode }) {
   return (
     <MDXStyles
       h1={{
-        //   fontFamily: "Inter_900Black",
         fontSize: 32,
       }}
       h2={{
-        //   fontFamily: "Inter_900Black",
         marginTop: 16,
         fontSize: 22,
         marginBottom: 0,
       }}
       code={{
-        //   fontFamily: "SourceCodePro_400Regular",
         borderRadius: 2,
         backgroundColor: "#f2f2f2",
         padding: 20,
         fontSize: 16,
       }}
       inlineCode={{
-        //   fontFamily: "SourceCodePro_400Regular",
         borderRadius: 2,
         fontSize: 15,
         backgroundColor: "#f2f2f2",
@@ -98,8 +107,6 @@ function MediumStyle({ children }) {
         paddingHorizontal: 4,
       }}
       p={{
-        //   fontFamily: "Inter_400Regular",
-
         fontSize: Platform.select({
           web: "1rem",
           default: 16,
@@ -110,7 +117,6 @@ function MediumStyle({ children }) {
         }),
       }}
       blockquote={{
-        //   fontFamily: "Inter_400Regular",
         borderLeftWidth: 3,
         fontSize: 21,
         borderLeftColor: "#292929",
@@ -122,7 +128,6 @@ function MediumStyle({ children }) {
         height: 180,
       }}
       a={{
-        //   fontFamily: "Inter_400Regular",
         textDecorationLine: "underline",
       }}
       hr={{

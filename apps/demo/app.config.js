@@ -12,5 +12,9 @@ module.exports = ({ config }) => {
   config.ios.bundleIdentifier = appId;
   if (!config.android) config.android = {};
   config.android.package = appId;
+
+  // Expo Router config
+  config.scheme = cleanName;
+
   return config;
 };

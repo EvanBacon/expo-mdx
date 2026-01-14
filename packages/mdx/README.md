@@ -1,11 +1,15 @@
 # @bacons/mdx
 
-Universal build-time [MDX](https://mdxjs.com) for Expo apps and websites.
+Universal [MDX](https://mdxjs.com) for Expo apps and websites.
+
+- Build-time MDX to React Native or React DOM components.
+- Server-rendered MDX for downloading content over a CMS.
+- Custom components and style definitions.
 
 ## Add the package to your npm dependencies
 
 ```
-yarn add @bacons/mdx
+bun add @bacons/mdx
 ```
 
 ## Setup
@@ -267,6 +271,126 @@ And the DOM:
    '@bacons/react-views',
    '@expo/html-elements',
    ```
+
+## Remote MDX
+
+Load and render MDX content from a remote server. This is useful for CMS-driven content, blog posts, or any MDX that needs to be fetched at runtime.
+
+### Server-side Compilation
+
+First, compile MDX on your server (API route, edge function, or build script):
+
+```ts
+// app/api/mdx+api.ts (Expo Router API route)
+import { compileMDX } from "@bacons/mdx/server";
+
+export async function GET(request: Request) {
+  const url = new URL(request.url);
+  const slug = url.searchParams.get("slug");
+
+  // Fetch MDX content from your CMS or file system
+  const mdxSource = `
+# Hello World
+
+This is **bold** text with a <CustomButton>Click me</CustomButton>.
+  `;
+
+  const compiled = await compileMDX(mdxSource);
+
+  return Response.json(compiled);
+}
+```
+
+The `compileMDX` function accepts optional remark and rehype plugins:
+
+```ts
+const compiled = await compileMDX(mdxSource, {
+  remarkPlugins: [remarkGfm],
+  rehypePlugins: [rehypeHighlight],
+});
+```
+
+### Client-side Rendering
+
+Use the `RemoteMDX` component and `useMDXFetch` hook to fetch and render remote MDX:
+
+```tsx
+import { RemoteMDX, useMDXFetch, MDXComponents } from "@bacons/mdx";
+import { Text, ActivityIndicator } from "react-native";
+
+function BlogPost({ slug }: { slug: string }) {
+  const { content, loading, error } = useMDXFetch(`/api/mdx?slug=${slug}`);
+
+  if (loading) return <ActivityIndicator />;
+  if (error) return <Text>Error: {error.message}</Text>;
+  if (!content) return null;
+
+  return (
+    <MDXComponents
+      components={{
+        CustomButton: (props) => (
+          <Text {...props} style={{ color: "blue" }} />
+        ),
+      }}
+    >
+      <RemoteMDX source={content} />
+    </MDXComponents>
+  );
+}
+```
+
+You can also fetch the content yourself and pass it directly:
+
+```tsx
+import { RemoteMDX, type CompiledMDX } from "@bacons/mdx";
+
+function BlogPost({ content }: { content: CompiledMDX }) {
+  return <RemoteMDX source={content} />;
+}
+```
+
+### How It Works
+
+1. **Server**: Compiles MDX to a JSON-serializable AST format (not executable JavaScript)
+2. **Client**: Fetches the JSON and renders it using the existing component system
+3. **Security**: No `eval()` or code execution - the AST is pure data
+4. **Components**: Custom components work via `MDXComponents` context or `components` prop
+5. **Styles**: `MDXStyles` context is fully supported
+
+### Frontmatter
+
+Frontmatter is extracted and available in the compiled output:
+
+```ts
+const compiled = await compileMDX(`
+---
+title: My Post
+date: 2024-01-01
+---
+
+# Content here
+`, {
+  remarkPlugins: [remarkFrontmatter, remarkMdxFrontmatter],
+});
+
+console.log(compiled.frontmatter);
+// { title: "My Post", date: "2024-01-01" }
+```
+
+Access frontmatter on the client:
+
+```tsx
+function BlogPost({ slug }: { slug: string }) {
+  const { content } = useMDXFetch(`/api/mdx?slug=${slug}`);
+
+  return (
+    <>
+      <Text>{content?.frontmatter?.title}</Text>
+      <RemoteMDX source={content} />
+    </>
+  );
+}
+```
 
 ## Known Issues
 
