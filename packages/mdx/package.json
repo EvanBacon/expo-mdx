@@ -1,6 +1,6 @@
 {
   "name": "@bacons/mdx",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Universal MDX renderer for React Native",
   "main": "build/react/index",
   "types": "build/react/index",
