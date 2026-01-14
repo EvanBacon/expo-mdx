@@ -144,6 +144,7 @@ export function stripExtras(Element: any, displayName?: string) {
     index,
     prevSibling,
     parentName,
+    components,
     ...props
   }: any) {
     return <Element {...props} />;

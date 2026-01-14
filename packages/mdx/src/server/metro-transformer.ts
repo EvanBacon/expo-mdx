@@ -1,135 +1,122 @@
-// @ts-expect-error
-import mdx from "@mdx-js/mdx";
-import { Processor } from "unified";
-import { Parent } from "unist";
-import visit from "unist-util-visit";
+import { recmaExpoRuntime } from "./plugins/recma-expo-runtime";
+import {
+  rehypeExpoLocalImages,
+  type RehypeExpoLocalImagesOptions,
+} from "./plugins/rehype-expo-local-images";
+import { rehypePrefixTagNames } from "./plugins/rehype-prefix-tag-names";
 
 const debug = require("debug")("bacons:mdx:transform") as typeof console.log;
 
-const getTemplate = (rawMdxString: string) => {
-  const replacedShortcodes = rawMdxString.replace(
-    /= makeShortcode\(/g,
-    "= makeExpoMetroProvided("
-  );
+/** The singleton MDX compiler instance */
+let _compiler: ReturnType<typeof import("@mdx-js/mdx").createProcessor> | null =
+  null;
 
-  return `"use client";
-import { useMDXComponents } from "@bacons/mdx";
-${makeExpoMetroProvidedTemplate}
-${replacedShortcodes.replace(
-  "return <MDXLayout",
-  "const html = { ...useMDXComponents(), ...(components ?? {}) };\n  const MDXLayout = html.Wrapper;\n  return <MDXLayout"
-)}`;
-};
+/** Key to identify compiler configuration (for testing) */
+let _compilerKey: string | null = null;
 
-const makeExpoMetroProvidedTemplate = `
-const makeExpoMetroProvided = name => function MDXExpoMetroComponent({ __components, ...props}) {
-  if (__components[name] == null) {
-    console.warn("Component " + name + " was not imported, exported, or provided by MDXProvider as global scope")
-    return <__components.span {...props}/>
-  }
-  return __components[name](props);
-};`;
-
-function isParent(node: any): node is Parent {
-  return Array.isArray(node?.children);
+/**
+ * Reset the singleton compiler (useful for tests).
+ */
+export function resetCompiler() {
+  _compiler = null;
+  _compilerKey = null;
 }
 
+/**
+ * Create and return the singleton MDX compiler instance.
+ * This is done asynchronously to use ESM code inside CJS contexts.
+ */
+export async function createSingletonCompiler(
+  options: import("@mdx-js/mdx").ProcessorOptions,
+  key?: string
+) {
+  // Reset compiler if key changed (different configuration)
+  if (key && _compilerKey !== key) {
+    _compiler = null;
+    _compilerKey = key;
+  }
+
+  if (!_compiler) {
+    _compiler = (await import("@mdx-js/mdx")).createProcessor(options);
+    if (key) _compilerKey = key;
+  }
+
+  return _compiler;
+}
+
+/** Counter for generating unique compiler keys */
+let _transformerCounter = 0;
+
 export function createTransformer({
+  matchLocalAsset,
   matchFile = (props) => !!props.filename.match(/\.mdx?$/),
-  matchLocalAsset = (props) => !!props.src.match(/^[.@]/),
   remarkPlugins = [],
-}: {
+}: RehypeExpoLocalImagesOptions & {
   /**
    * @param props Metro transform props.
    * @returns true if the file should be transformed.
    * @default Function that matches if a file ends with `.mdx` or `.md`.
    */
   matchFile?: (props: { filename: string; src: string }) => boolean;
-  /**
-   * @returns true if the src reference should be converted to a local `require`.
-   * @default Function that matches strings starting with `.` or `@`.
-   */
-  matchLocalAsset?: (props: { src: string }) => boolean;
 
   remarkPlugins?: any[];
 } = {}) {
-  const compiler = mdx.createCompiler({ remarkPlugins }) as Processor;
-
-  // Append this final rule at the end of the compiler chain:
-  compiler.use(() => {
-    return (tree, _file) => {
-      if (isParent(tree)) {
-        // Pass components={html} to custom components:
-        visit(tree, "jsx", (node) => {
-          if (
-            !("value" in node) ||
-            !node.value ||
-            typeof node.value !== "string"
-          ) {
-            return;
-          }
-          if (node.value.match(/<([A-Z][\w.]+)/)) {
-            node.value = node.value.replace(
-              /<([A-Z][\w.]+)/,
-              `<$1 __components={html} `
-            );
-          }
-        });
-      }
-
-      if (isParent(tree)) {
-        const walkForImages = (node: any) => {
-          if (node.tagName === "img") {
-            if (matchLocalAsset(node.properties)) {
-              // Relative path should be turned into a require statement:
-              node.properties.src = `[[_Expo_MemberProperty:require("${node.properties.src}")]]`;
-              // delete node.properties.src;
-            }
-          }
-          if (isParent(node)) {
-            node.children.forEach(walkForImages);
-          }
-        };
-
-        tree.children.map(walkForImages);
-      }
-
-      visit(tree, "element", (node) => {
-        // Ensure we don't use react-dom elements
-        // @ts-expect-error: incorrect types
-        node.tagName = "html." + node.tagName;
-      });
-    };
-  });
+  // Generate a unique key for this transformer configuration
+  const compilerKey = `transformer-${++_transformerCounter}`;
 
   async function transformMdx(props: { filename: string; src: string }) {
     if (!matchFile(props)) {
       return props;
     }
 
-    let { contents } = await compiler.process({
-      contents: props.src,
-      path: props.filename,
-    });
+    const { visit: estreeVisit } = await import("estree-util-visit");
+    const compiler = await createSingletonCompiler(
+      {
+        remarkPlugins,
+        rehypePlugins: [
+          [rehypeExpoLocalImages, { matchLocalAsset }],
+          [rehypePrefixTagNames, { prefix: "html." }],
+        ],
+        recmaPlugins: [[recmaExpoRuntime, { visit: estreeVisit }]],
+      },
+      compilerKey
+    );
 
-    if (typeof contents === "string") {
-      // Support member expressions in require statements:
-      contents = contents.replace(
-        /"\[\[_Expo_MemberProperty:(.*)\]\]"/g,
-        (match, p1) => {
-          return p1.replace(/\\\\/g, "\\").replace(/\\"/g, '"');
-        }
-      );
+    let contents: string;
+
+    try {
+      let { value } = await compiler.process({
+        value: props.src,
+        path: props.filename,
+      });
+
+      contents = value.toString();
+    } catch (error: any) {
+      const errMsg = `Failed to process MDX for ${props.filename}: ${error?.message || error}`;
+      const newError = new Error(errMsg);
+      (newError as any).cause = error;
+      throw newError;
     }
 
-    props.src = getTemplate(contents.toString());
+    // if (typeof contents === "string") {
+    //   // Support member expressions in require statements:
+    //   contents = contents.replace(
+    //     /"\[\[_Expo_MemberProperty:(.*)\]\]"/g,
+    //     (match, p1) => {
+    //       return p1.replace(/\\\\/g, "\\").replace(/\\"/g, '"');
+    //     }
+    //   );
+    // }
+
+    // props.src = getTemplate(contents);
+    props.src = contents;
 
     debug("Compiled MDX file:", props.filename, "\n", props.src);
 
     return props;
   }
 
-  return { transform: transformMdx, compiler };
+  return { transform: transformMdx };
 }
 
 export const transform = createTransformer().transform;

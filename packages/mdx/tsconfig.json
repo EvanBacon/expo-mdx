@@ -2,7 +2,8 @@
   "extends": "expo-module-scripts/tsconfig.base",
   "compilerOptions": {
     "target": "es2019",
-    "module": "es2015",
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "outDir": "./build",
     "jsx": "preserve",
     "declarationMap": false,
