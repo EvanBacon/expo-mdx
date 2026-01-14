@@ -1,6 +1,6 @@
 # @bacons/mdx
 
-Build-time [MDX](https://mdxjs.com) for Expo apps and websites.
+Universal build-time [MDX](https://mdxjs.com) for Expo apps and websites.
 
 ## Add the package to your npm dependencies
 
