@@ -23,7 +23,6 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "jest --watch",
-    "prepublishOnly": "expo-module prepublishOnly && taskr release",
     "expo-module": "expo-module"
   },
   "repository": {
