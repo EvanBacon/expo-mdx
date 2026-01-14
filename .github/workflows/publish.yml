@@ -38,8 +38,12 @@ jobs:
       - name: Bump version
         working-directory: packages/mdx
         run: |
-          npm version patch --no-git-tag-version
-          NEW_VERSION=$(node -p "require('./package.json').version")
+          # Get current version and bump patch
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          NEW_VERSION=$(node -p "const v='$CURRENT_VERSION'.split('.'); v[2]=parseInt(v[2])+1; v.join('.')")
+          # Update package.json directly
+          node -e "const fs=require('fs'); const p=JSON.parse(fs.readFileSync('package.json')); p.version='$NEW_VERSION'; fs.writeFileSync('package.json', JSON.stringify(p, null, 2)+'\n')"
+          echo "Bumped version: $CURRENT_VERSION -> $NEW_VERSION"
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
       - name: Build package
