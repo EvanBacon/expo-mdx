@@ -147,14 +147,12 @@ Key dependencies in the MDX pipeline:
 The package auto-publishes to npm when changes are merged to main. The workflow (`.github/workflows/publish.yml`):
 
 1. Triggers on push to `main` when `packages/mdx/**` changes
-2. Builds the package
-3. Checks if the current version is already published
-4. Publishes only if the version is new
+2. Auto-bumps the patch version (e.g., 0.5.1 → 0.5.2)
+3. Builds the package
+4. Commits the version bump with `[skip ci]`
+5. Publishes to npm with provenance
 
-**To release a new version:**
-1. Update version in `packages/mdx/package.json`
-2. Merge to main
-3. GitHub Actions will automatically publish
+**To release:** Just merge to main. Version bumping and publishing is automatic.
 
 **Required setup:** Add `NPM_TOKEN` secret to GitHub repository settings (Settings → Secrets → Actions).
 

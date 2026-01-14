@@ -12,11 +12,13 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -28,29 +30,29 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Bump version
+        working-directory: packages/mdx
+        run: |
+          npm version patch --no-git-tag-version
+          NEW_VERSION=$(node -p "require('./package.json').version")
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+
       - name: Build package
         working-directory: packages/mdx
         run: yarn build
 
-      - name: Check if version is already published
-        id: check-version
-        working-directory: packages/mdx
+      - name: Commit version bump
         run: |
-          PACKAGE_NAME=$(node -p "require('./package.json').name")
-          PACKAGE_VERSION=$(node -p "require('./package.json').version")
-          echo "Package: $PACKAGE_NAME@$PACKAGE_VERSION"
-
-          # Check if this version exists on npm
-          if npm view "$PACKAGE_NAME@$PACKAGE_VERSION" version 2>/dev/null; then
-            echo "Version $PACKAGE_VERSION already published"
-            echo "should_publish=false" >> $GITHUB_OUTPUT
-          else
-            echo "Version $PACKAGE_VERSION not yet published"
-            echo "should_publish=true" >> $GITHUB_OUTPUT
-          fi
+          git add packages/mdx/package.json
+          git commit -m "chore: bump @bacons/mdx to v${{ env.NEW_VERSION }} [skip ci]"
+          git push
 
       - name: Publish to npm
-        if: steps.check-version.outputs.should_publish == 'true'
         working-directory: packages/mdx
         run: npm publish --provenance --access public
         env:
